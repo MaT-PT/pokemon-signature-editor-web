@@ -30,34 +30,17 @@ window.addEventListener('load', function() {
 			return false;
 		}
 
-		var SeedTable = this.constructor.SeedTable,
-			BWFooter = this.constructor.BWFooter,
+		var BWFooter = this.constructor.BWFooter,
 			BlockSizes = this.constructor.BlockSizes,
 			OffsetsSign = this.constructor.OffsetsSign,
 			BlockOffsets = this.constructor.BlockOffsets,
 			UsableBlocks = this.constructor.UsableBlocks,
 			OffsetsSavCnt = this.constructor.OffsetsSavCnt,
-			ChkSumFooterOffsets = this.constructor.ChkSumFooterOffsets;
+			ChkSumFooterOffsets = this.constructor.ChkSumFooterOffsets,
+			ByteArraysEqual = this.constructor.ByteArraysEqual,
+			GetCheckSum = this.constructor.GetCheckSum;
 
 		var uInt32Arr = new Uint32Array(saveBuffer, 0, Math.floor(saveBuffer.byteLength / 4));
-
-		function ByteArraysEqual(a, b) {
-			if (a.length !== b.length)
-				return false;
-			for (var i = 0, l = a.length; i < l; i++)
-				if (a[i] !== b[i])
-					return false;
-			return true;
-		}
-
-		function GetCheckSum(data) {
-			var sum = 0xffff;
-
-			for (var i = 0, l = data.length; i < l; i++)
-				sum = ((sum << 8) & 0xffff) ^ SeedTable[(data[i] ^ ((sum >> 8) & 0xff)) & 0xff];
-
-			return sum;
-		}
 
 		// Reference: http://wiki.desmume.org/index.php?title=No_gba_save_format
 
@@ -310,6 +293,22 @@ window.addEventListener('load', function() {
 	SaveFile.UsableBlocks = {none: 0, block1: 1, block2: 2, both: 3},
 	SaveFile.OffsetsSavCnt = {dp: 0xc0f0, plat: 0xcf1c, hgss: 0xf618, bw: 0x23f8c},
 	SaveFile.ChkSumFooterOffsets = {dp_pt: 0x12, hgss_bw: 0xe};
+	SaveFile.ByteArraysEqual = function(a, b) {
+		if (a.length !== b.length)
+			return false;
+		for (var i = 0, l = a.length; i < l; i++)
+			if (a[i] !== b[i])
+				return false;
+		return true;
+	};
+	SaveFile.GetCheckSum = function(data) {
+		var sum = 0xffff;
+
+		for (var i = 0, l = data.length; i < l; i++)
+			sum = ((sum << 8) & 0xffff) ^ SaveFile.SeedTable[(data[i] ^ ((sum >> 8) & 0xff)) & 0xff];
+
+		return sum;
+	};
 
 	var canvas = document.getElementById('sign'),
 		canvasMono = document.getElementById('sign_mono'),
