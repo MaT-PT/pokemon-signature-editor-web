@@ -252,22 +252,6 @@ window.addEventListener('load', function() {
 			}
 
 		this.signBytes = new Uint8Array(rawSaveBuffer, this.currentBlockOffset + this.offsetSign, 0x600);
-
-		this.GetSignImageBytes = function() {
-			var tempBin,
-				offset,
-				signImageBytes = new Uint8Array(0x3000);	// 192 * 64 = 0x600 * 8 = 12288 = 0x3000
-			for (var i = 0, l = this.signBytes.length; i < l; i++) {
-				tempBin = Dec2Bin(this.signBytes[i]);
-				for (var j = 0; j < 8; j++) {
-					offset = (8 * i + j) * 4;
-					signImageBytes[offset] = signImageBytes[offset + 1] = signImageBytes[offset + 2] = tempBin.charAt(j) === '1' ? 0 : 255;
-					//signImageBytes[offset + 3] = 255;
-				}
-			}
-
-			return signImageBytes;
-		};
 	};
 
 	SaveFile.SeedTable = new Uint16Array([0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -446,10 +430,8 @@ window.addEventListener('load', function() {
 		if (typeof FileReader !== 'undefined') {
 			var reader = new FileReader();
 			reader.onload = function(evt) {
-				//console.profile(); /***/
 				var saveBuffer = evt.target.result;
 				var save = new SaveFile(saveBuffer);
-				//console.profileEnd(); /***/
 				if (save.version === Versions.unknown) {
 					//uncheckAll('radio_version_save');
 					document.getElementById('save_infos').style.visibility = 'hidden';
@@ -482,14 +464,12 @@ window.addEventListener('load', function() {
 				var imgd = ctxSave.createImageData(192, 64);
 				var pixMap = imgd.data;
 
-				var tempBin, offset;
+				var currByte, offset;
 				for (var i = 0, l = save.signBytes.length; i < l; i++) {
-					tempBin = Dec2Bin(save.signBytes[i]);
-					for (var j = 0; j < 8; j++) {
-						//offset = (8 * i + j) * 4;
-						//offset = (n2x((8 * i + j)) + 192 * n2y((8 * i + j))) * 4;
-						offset = (192 * (i % 8) + 8 * Math.floor(i / 8) + 1344 * Math.floor(i / 192) + 7 - j) * 4;
-						pixMap[offset] = pixMap[offset + 1] = pixMap[offset + 2] = tempBin.charAt(j) === '1' ? 0 : 255;
+					currByte = save.signBytes[i];
+					for (var bitMask = 0x80, j = 7; bitMask; bitMask >>>= 1, j--) {
+						offset = (192 * (i % 8) + 8 * Math.floor(i / 8) + 1344 * Math.floor(i / 192) + j) * 4;
+						pixMap[offset] = pixMap[offset + 1] = pixMap[offset + 2] = (currByte & bitMask) ? 0 : 255;
 						pixMap[offset + 3] = 255;
 					}
 				}
@@ -551,16 +531,15 @@ window.addEventListener('load', function() {
 		return Math.sqrt(r * r * .241 + g * g * .691 + b * b * .068) / 255;
 	}
 
-	function IsBlack() {
-		return !(this.r || this.g || this.b);
+	function IsBlack(pix) {
+		return !(pix.r || pix.g || pix.b);
 	}
 
 	function GetPixel(pixMap, x, y) {
 		var offset = 4 * (x + 192 * y);
 		return {r: pixMap[offset],
 				g: pixMap[offset + 1],
-				b: pixMap[offset + 2],
-				isBlack: IsBlack};
+				b: pixMap[offset + 2]};
 	}
 
 	function Bin2Hex(bin) {
@@ -613,7 +592,7 @@ window.addEventListener('load', function() {
 			for (var cX = 0; cX <= 184; cX += 8) {
 				for (var pY = 3 + cY; pY >= cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
-						codeTemp += GetPixel(pixMap, pX, pY).isBlack() ? '1' : '0';
+						codeTemp += IsBlack(GetPixel(pixMap, pX, pY)) ? '1' : '0';
 					code1 += Bin2Hex(codeTemp);
 
 					codeTemp = '';
@@ -622,7 +601,7 @@ window.addEventListener('load', function() {
 
 				for (var pY = 7 + cY; pY >= 4 + cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
-						codeTemp += GetPixel(pixMap, pX, pY).isBlack() ? '1' : '0';
+						codeTemp += IsBlack(GetPixel(pixMap, pX, pY)) ? '1' : '0';
 
 					code1 += Bin2Hex(codeTemp);
 

@@ -12,6 +12,7 @@
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
 </head>
+<?php ob_flush(); flush(); ?>
 <body>
 <canvas id="sign" width="192" height="64">[canvas]</canvas>
 <canvas id="sign_mono" width="192" height="64">[canvas]</canvas>
@@ -71,7 +72,7 @@
       <div id="save_size">Size: <output id="save_size_value"></output></div>
       <div id="save_status">Status: <output id="save_status_value"></output></div>
       <div id="save_format">Format: <output id="save_format_value"></output></div>
-      Signature: <img id="img_sign_save" width="192" height="64" src="#" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
+      Signature: <img id="img_sign_save" width="192" height="64" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQIHWP4zwAAAgEBAMVfG14AAAAASUVORK5CYII=" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
 You can also double-click it." />
       <canvas id="sign_save" width="192" height="64" style="display: none;">[canvas]</canvas>
     </div>
