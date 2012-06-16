@@ -8,7 +8,7 @@
 <meta name="rating" content="General" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <title>Signature editor</title>
-<!--<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />-->
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
 </head>
