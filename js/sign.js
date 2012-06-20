@@ -5,6 +5,7 @@
 	 - Injecter une nouvelle signature dans une sauvegarde et la faire télécharger
 	 - Améliorer l'interface
 **/
+
 String.prototype.toCharCode = function() {
 	var l = this.length,
 		arr = new Array(l);
@@ -13,7 +14,7 @@ String.prototype.toCharCode = function() {
 	return arr;
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('DOMContentLoaded', function() {
 	if (ArrayBuffer.prototype.slice) {
 		document.getElementById('save_more_formats').style.display = 'inline';
 		document.getElementById('save_only_raw').style.display = 'none';
@@ -75,8 +76,8 @@ window.addEventListener('load', function() {
 					break;
 
 				case Formats.no$GbaCompressed:
-					var sizeComp = uInt32Arr[0x48 / 4],
-						sizeUncomp = uInt32Arr[0x4c / 4],
+					var sizeUncomp = uInt32Arr[0x4c / 4],
+						//sizeComp = uInt32Arr[0x48 / 4],
 						srcBuff = new Uint8Array(saveBuffer),
 						dstBuff = new Uint8Array(sizeUncomp),
 						srcPos = 0x50,

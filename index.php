@@ -1,16 +1,18 @@
+<?php $IS_DEBUG = false; ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<meta name="author" lang="fr" content="M@T" />
-<meta name="description" lang="fr" content="Pok&eacute;mon signature editor" />
-<meta name="keywords" lang="fr" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor" />
+<meta name="author" lang="en" content="M@T" />
+<meta name="description" lang="en" content="Pok&eacute;mon signature editor" />
+<meta name="keywords" lang="en" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor" />
 <meta name="rating" content="General" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <title>Signature editor</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
+<?php if (!$IS_DEBUG) { ?><script type="text/javascript">window.onload=function(){new Image().src='//affiliates.mozilla.org/link/banner/19565'}</script><?php } ?>
 </head>
 <?php ob_flush(); flush(); ?>
 <body>
@@ -92,6 +94,11 @@ You can also double-click it." />
   </p>
   -->
   <!--<button id="test">test</button>-->
+</div>
+<div class="affiliate">
+  <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank">
+    <img src="//affiliates.mozilla.org/media/uploads/banners/c3d1065eacadd1f97d1d54cb962a4f7ac1e9e874.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox" />
+  </a>
 </div>
 </body>
 </html>

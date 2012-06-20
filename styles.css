@@ -1,6 +1,22 @@
 body {
 	font-size: 16px;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "DejaVu Sans", "Lucida Sans", sans-serif;
+	position: relative;
+}
+.affiliate {
+	position: absolute;
+	right: 1em;
+	top: 1em;
+	opacity: 0.25;
+	-webkit-transition: all 0.25s ease-in-out;
+	-moz-transition: all 0.25s ease-in-out;
+	transition: all 0.25s ease-in-out;
+}
+.affiliate:hover {
+	opacity: 1;
+}
+img {
+	border: 0;
 }
 #sign, #sign_mono {
 	background-color: #ccc;
