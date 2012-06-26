@@ -29,23 +29,24 @@
 <section id="code_wrapper">
   <fieldset id="version_code">
     <legend style="font-weight: bold;">Game version</legend>
-    <input id="dp_code" name="radio_version_code" type="radio" value="dp"><label for="dp_code">Diamond/Pearl</label><br />
-    <input id="plat_code" name="radio_version_code" type="radio" value="plat"><label for="plat_code">Platinum</label><br />
-    <input id="hgss_code" name="radio_version_code" type="radio" value="hgss"><label for="hgss_code">HeartGold/SoulSilver</label><br />
-    <input id="bw_code" name="radio_version_code" type="radio" value="bw" checked="checked"><label for="bw_code">Black/White</label>
+    <input id="dp_code" name="radio_version_code" type="radio" value="dp" /><label for="dp_code">Diamond/Pearl</label><br />
+    <input id="plat_code" name="radio_version_code" type="radio" value="plat" /><label for="plat_code">Platinum</label><br />
+    <input id="hgss_code" name="radio_version_code" type="radio" value="hgss" /><label for="hgss_code">HeartGold/SoulSilver</label><br />
+    <input id="bw_code" name="radio_version_code" type="radio" value="bw" /><label for="bw_code">Black/White</label><br />
+    <input id="b2w2_code" name="radio_version_code" type="radio" value="b2w2" checked="checked" /><label for="b2w2_code">Black 2/White 2</label>
   </fieldset>
   <fieldset id="lang_code">
     <legend>Game Language</legend>
     <div class="float">
-      <input id="fr_code" name="radio_lang_code" type="radio" value="fr" checked="checked"><label for="fr_code">Fran&ccedil;ais</label><br />
-      <input id="en_code" name="radio_lang_code" type="radio" value="en"><label for="en_code">UK/US/Aus</label><br />
-      <input id="jp_code" name="radio_lang_code" type="radio" value="jp"><label for="jp_code">&#26085;&#26412;&#35486; (Japanese)</label><br />
-      <input id="es_code" name="radio_lang_code" type="radio" value="es"><label for="es_code">Español</label>
+      <input id="fr_code" name="radio_lang_code" type="radio" value="fr" checked="checked" /><label for="fr_code">Fran&ccedil;ais</label><br />
+      <input id="en_code" name="radio_lang_code" type="radio" value="en" /><label for="en_code">UK/US/Aus</label><br />
+      <input id="jp_code" name="radio_lang_code" type="radio" value="jp" /><label for="jp_code">&#26085;&#26412;&#35486; (Japanese)</label><br />
+      <input id="es_code" name="radio_lang_code" type="radio" value="es" /><label for="es_code">Español</label><br />
+      <input id="it_code" name="radio_lang_code" type="radio" value="it" /><label for="it_code">Italiano</label>
     </div>
     <div class="float">
-      <input id="it_code" name="radio_lang_code" type="radio" value="it"><label for="it_code">Italiano</label><br />
-      <input id="de_code" name="radio_lang_code" type="radio" value="de"><label for="de_code">Deutch</label><br />
-      <input id="ko_code" name="radio_lang_code" type="radio" value="ko"><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
+      <input id="de_code" name="radio_lang_code" type="radio" value="de" /><label for="de_code">Deutch</label><br />
+      <input id="ko_code" name="radio_lang_code" type="radio" value="ko" /><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
     </div>
   </fieldset>
   <div style="clear: both;"></div>

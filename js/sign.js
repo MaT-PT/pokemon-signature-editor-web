@@ -22,7 +22,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	var Langs = {fr: 0, en: 1, jp: 2, es: 3, it: 4, de: 5, ko: 6},
 		Formats = {raw: 0, dsv: 1, no$GbaUncompressed: 2, no$GbaCompressed: 3, ToString: function(id) {return {0: 'Raw', 1: 'DSV (DeSmuME)', 2: 'No$GBA Uncompressed', 3: 'No$GBA Compressed'}[id];}},
-		Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, b2w2: 4, unknown: 0xff, ToString: function(id) {return {0: 'Diamond/Pearl', 1: 'Platinum', 2: 'HeartGold/SoulSilver', 3: 'Black/White', 0xff: 'Unknown'}[id];}},
+		Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, b2w2: 4, unknown: 0xff, ToString: function(id) {return {0: 'Diamond/Pearl', 1: 'Platinum', 2: 'HeartGold/SoulSilver', 3: 'Black/White', 4: 'Black 2/White 2', 0xff: 'Unknown'}[id];}},
 		Statuses = {good: 0, corrupt: 1, fallbackToBlock1: 2, fallbackToBlock2: 3};
 
 	var SaveFile = function(saveBuffer) {
@@ -32,6 +32,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		}
 
 		var BWFooter = this.constructor.BWFooter,
+			B2W2Footer = this.constructor.B2W2Footer,
 			BlockSizes = this.constructor.BlockSizes,
 			OffsetsSign = this.constructor.OffsetsSign,
 			BlockOffsets = this.constructor.BlockOffsets,
@@ -45,21 +46,20 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		// Reference: http://wiki.desmume.org/index.php?title=No_gba_save_format
 
-		this.isNo$Gba = ByteArraysEqual(new Uint8Array(saveBuffer, 0, 0x20), 'NocashGbaBackupMediaSavDataFile'.toCharCode().concat(0x1a)) && uInt32Arr[0x40 / 4] === 0x4d415253;	// "SRAM"
-
 		this.GetFormat = function() {
-			if (this.isNo$Gba) {
+			if (ByteArraysEqual(new Uint8Array(saveBuffer, 0, 0x20), 'NocashGbaBackupMediaSavDataFile'.toCharCode().concat(0x1a)) && uInt32Arr[0x40 / 4] === 0x4d415253) {
 				if (uInt32Arr[0x44 / 4] === 0)	// No$GBA Uncompressed
 					return Formats.no$GbaUncompressed;
 				else if (uInt32Arr[0x44 / 4] === 1)	// No$GBA Compressed
 					return Formats.no$GbaCompressed;
 			}
-			else if (ByteArraysEqual(new Uint8Array(saveBuffer, saveBuffer.byteLength - 0x7a, 0x7a), [0x7c, 0x3c, 0x2d, 0x2d, 0x53, 0x6e, 0x69, 0x70, 0x20, 0x61, 0x62, 0x6f, 0x76, 0x65, 0x20, 0x68, 0x65, 0x72, 0x65, 0x20, 0x74, 0x6f, 0x20, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x20, 0x61, 0x20, 0x72, 0x61, 0x77, 0x20, 0x73, 0x61, 0x76, 0x20, 0x62, 0x79, 0x20, 0x65, 0x78, 0x63, 0x6c, 0x75, 0x64, 0x69, 0x6e, 0x67, 0x20, 0x74, 0x68, 0x69, 0x73, 0x20, 0x44, 0x65, 0x53, 0x6d, 0x75, 0x4d, 0x45, 0x20, 0x73, 0x61, 0x76, 0x65, 0x64, 0x61, 0x74, 0x61, 0x20, 0x66, 0x6f, 0x6f, 0x74, 0x65, 0x72, 0x3a, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7c, 0x2d, 0x44, 0x45, 0x53, 0x4d, 0x55, 0x4d, 0x45, 0x20, 0x53, 0x41, 0x56, 0x45, 0x2d, 0x7c]))	// .DSV file (DeSmuME)
+			else if (ByteArraysEqual(new Uint8Array(saveBuffer, saveBuffer.byteLength - 0x10, 0x10), '|-DESMUME SAVE-|'.toCharCode()))
 					return Formats.dsv;
 
 			return Formats.raw;
 		};
 		this.format = this.GetFormat();
+
 		this.GetRawSave = function() {
 			switch (this.format) {
 				case Formats.raw:
@@ -113,13 +113,13 @@ window.addEventListener('DOMContentLoaded', function() {
 		};
 		var rawSaveBuffer = this.GetRawSave();
 		var rawUint32Arr;
-		try {
+		//try {
 			rawUint32Arr = new Uint32Array(rawSaveBuffer);
-		}
-		catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
+		//}
+		/*catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
 			this.version = Versions.unknown;
 			return false;
-		}
+		}*/
 
 		this.is256kB = rawSaveBuffer.byteLength === 0x40000;
 
@@ -199,7 +199,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				break;
 
 			case Versions.bw:
-				this.offsetSign = OffsetsSign.bw;
+				this.offsetSign = OffsetsSign.bw_b2w2;
 				this.offsetSavCnt = OffsetsSavCnt.bw;
 				this.blockSize = BlockSizes.bw;
 				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
@@ -207,7 +207,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				break;
 
 			case Versions.b2w2:
-				this.offsetSign = OffsetsSign.bw;
+				this.offsetSign = OffsetsSign.bw_b2w2;
 				this.offsetSavCnt = OffsetsSavCnt.bw;
 				this.blockSize = BlockSizes.b2w2;
 				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
@@ -235,13 +235,14 @@ window.addEventListener('DOMContentLoaded', function() {
 		this.currentBlockOffset = this.GetCurrentBlockOffset();
 
 		this.IsBlockCheckSumOk = function(blockOffset) {
-			if (this.version === Versions.bw) {
-				var signBlockCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + OffsetsSign.bw, BWFooter.signatureBlockSize));
-				var signBlockActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + OffsetsSign.bw + BWFooter.signatureBlockSize + 2, 1)[0];
-				var footerSignActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + BWFooter.signatureCheckSumOffset, 1)[0];
+			if (this.version === Versions.bw || this.version === Versions.b2w2) {
+				var footer = this.version === Versions.bw ? BWFooter : B2W2Footer;
+				var signBlockCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footer.signatureBlockSize));
+				var signBlockActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footer.signatureBlockSize + 2, 1)[0];
+				var footerSignActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footer.signatureCheckSumOffset, 1)[0];
 
-				var footerCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + BWFooter.offset, BWFooter.size));
-				var footerActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + BWFooter.checkSumOffset, 1)[0];
+				var footerCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + footer.offset, footer.size));
+				var footerActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footer.checkSumOffset, 1)[0];
 
 				return signBlockCheckSum === signBlockActualCheckSum &&
 					   signBlockCheckSum === footerSignActualCheckSum &&
@@ -289,8 +290,9 @@ window.addEventListener('DOMContentLoaded', function() {
 										  0xfd2e, 0xed0f, 0xdd6c, 0xcd4d, 0xbdaa, 0xad8b, 0x9de8, 0x8dc9, 0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,
 										  0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0]);
 	SaveFile.BWFooter = {offset: 0x23f00, size: 0x8c, checkSumOffset: 0x23f9a, signatureCheckSumOffset: 0x23f42, signatureBlockSize: 0x658},
+	SaveFile.B2W2Footer = {offset: 0x25f00, size: 0x94, checkSumOffset: 0x25fa2, signatureCheckSumOffset: 0x25f42, signatureBlockSize: 0x658},
 	SaveFile.BlockSizes = {dp: 0xc0ec, plat: 0xcf18, hgss: 0xf618, bw: 0x23f8c, b2w2: 0x25f8c},
-	SaveFile.OffsetsSign = {dp: 0x5904, plat: 0x5ba8, hgss: 0x4538, bw: 0x1c100},
+	SaveFile.OffsetsSign = {dp: 0x5904, plat: 0x5ba8, hgss: 0x4538, bw_b2w2: 0x1c100},
 	SaveFile.BlockOffsets = {block1: 0, block2: 0x40000, block2bw: 0x24000, block2b2w2: 0x26000},
 	SaveFile.UsableBlocks = {none: 0, block1: 1, block2: 2, both: 3},
 	SaveFile.OffsetsSavCnt = {dp: 0xc0f0, plat: 0xcf1c, hgss: 0xf618, bw: 0x23f8c},
@@ -453,7 +455,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				if (save.version === Versions.unknown) {
 					//uncheckAll('radio_version_save');
 					document.getElementById('save_infos').style.visibility = 'hidden';
-					document.getElementById('form_save_select').reset();
+					//document.getElementById('form_save_select').reset();
 					alert('Error: This is not a valid NDS Pokémon save file!');
 					return;
 				}
