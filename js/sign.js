@@ -113,13 +113,13 @@ window.addEventListener('DOMContentLoaded', function() {
 		};
 		var rawSaveBuffer = this.GetRawSave();
 		var rawUint32Arr;
-		//try {
+		try {
 			rawUint32Arr = new Uint32Array(rawSaveBuffer);
-		//}
-		/*catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
+		}
+		catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
 			this.version = Versions.unknown;
 			return false;
-		}*/
+		}
 
 		this.is256kB = rawSaveBuffer.byteLength === 0x40000;
 
@@ -195,22 +195,22 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.offsetSign = OffsetsSign.hgss;
 				this.offsetSavCnt = OffsetsSavCnt.hgss;
 				this.blockSize = BlockSizes.hgss;
-				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
+				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw_b2w2;
 				break;
 
 			case Versions.bw:
 				this.offsetSign = OffsetsSign.bw_b2w2;
 				this.offsetSavCnt = OffsetsSavCnt.bw;
 				this.blockSize = BlockSizes.bw;
-				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
+				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw_b2w2;
 				block2Offset = BlockOffsets.block2bw;
 				break;
 
 			case Versions.b2w2:
 				this.offsetSign = OffsetsSign.bw_b2w2;
-				this.offsetSavCnt = OffsetsSavCnt.bw;
+				this.offsetSavCnt = OffsetsSavCnt.b2w2;
 				this.blockSize = BlockSizes.b2w2;
-				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
+				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw_b2w2;
 				block2Offset = BlockOffsets.block2b2w2;
 				break;
 
@@ -236,13 +236,13 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		this.IsBlockCheckSumOk = function(blockOffset) {
 			if (this.version === Versions.bw || this.version === Versions.b2w2) {
-				var footer = this.version === Versions.bw ? BWFooter : B2W2Footer;
-				var signBlockCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footer.signatureBlockSize));
-				var signBlockActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footer.signatureBlockSize + 2, 1)[0];
-				var footerSignActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footer.signatureCheckSumOffset, 1)[0];
+				var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
+				var signBlockCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
+				var signBlockActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
+				var footerSignActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
 
-				var footerCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + footer.offset, footer.size));
-				var footerActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footer.checkSumOffset, 1)[0];
+				var footerCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
+				var footerActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
 
 				return signBlockCheckSum === signBlockActualCheckSum &&
 					   signBlockCheckSum === footerSignActualCheckSum &&
@@ -291,12 +291,12 @@ window.addEventListener('DOMContentLoaded', function() {
 										  0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0]);
 	SaveFile.BWFooter = {offset: 0x23f00, size: 0x8c, checkSumOffset: 0x23f9a, signatureCheckSumOffset: 0x23f42, signatureBlockSize: 0x658},
 	SaveFile.B2W2Footer = {offset: 0x25f00, size: 0x94, checkSumOffset: 0x25fa2, signatureCheckSumOffset: 0x25f42, signatureBlockSize: 0x658},
-	SaveFile.BlockSizes = {dp: 0xc0ec, plat: 0xcf18, hgss: 0xf618, bw: 0x23f8c, b2w2: 0x25f8c},
+	SaveFile.BlockSizes = {dp: 0xc0ec, plat: 0xcf18, hgss: 0xf618, bw: 0x23f8c, b2w2: 0x25f94},
 	SaveFile.OffsetsSign = {dp: 0x5904, plat: 0x5ba8, hgss: 0x4538, bw_b2w2: 0x1c100},
 	SaveFile.BlockOffsets = {block1: 0, block2: 0x40000, block2bw: 0x24000, block2b2w2: 0x26000},
 	SaveFile.UsableBlocks = {none: 0, block1: 1, block2: 2, both: 3},
-	SaveFile.OffsetsSavCnt = {dp: 0xc0f0, plat: 0xcf1c, hgss: 0xf618, bw: 0x23f8c},
-	SaveFile.ChkSumFooterOffsets = {dp_pt: 0x12, hgss_bw: 0xe};
+	SaveFile.OffsetsSavCnt = {dp: 0xc0f0, plat: 0xcf1c, hgss: 0xf618, bw: 0x23f8c, b2w2: 0x25f94},
+	SaveFile.ChkSumFooterOffsets = {dp_pt: 0x12, hgss_bw_b2w2: 0xe};
 	SaveFile.ByteArraysEqual = function(a, b) {
 		if (a.length !== b.length)
 			return false;
@@ -461,7 +461,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				}
 				document.getElementById('save_infos').style.visibility = 'visible';
 				document.getElementById('save_version_value').innerHTML = Versions.ToString(save.version);
-				document.getElementById('save_size_value').innerHTML = (save.is256kB ? '256' : '512') + '&nbsp;kB';
+				document.getElementById('save_size_value').innerHTML = save.is256kB ? '256&nbsp;kB (2&nbsp;Mb)' : '512&nbsp;kB (4&nbsp;Mb)';
 				document.getElementById('save_format_value').innerHTML = Formats.ToString(save.format);
 				switch (save.status) {
 					case Statuses.good:
