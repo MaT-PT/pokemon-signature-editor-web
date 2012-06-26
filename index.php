@@ -85,6 +85,7 @@ You can also double-click it." />
 <div style="margin-top: 1em; padding: 1em; border: 1px solid green; background-color: lightgray;">
   <img src="images/sign_mat_transp.png" alt="M@T bleu" />
   <img src="images/Rectangle.png" alt="Rectangle noir" />
+  <img src="images/Pokemon_logo_transp.png" alt="Logo Pok&eacute;mon transparent" />
   <br />
   <!--
   <p>
