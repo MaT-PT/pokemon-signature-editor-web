@@ -133,7 +133,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.dp;
 			}
-			if (rawUint32Arr[(0x12dc + BlockSizes.dp) / 4] === comp) {
+			if (rawUint32Arr[(0x12dc + BlockOffsets.block2) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.dp;
 			}
@@ -141,7 +141,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.plat;
 			}
-			if (rawUint32Arr[(0x1328 + BlockSizes.plat) / 4] === comp) {
+			if (rawUint32Arr[(0x1328 + BlockOffsets.block2) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.plat;
 			}
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.hgss;
 			}
-			if (rawUint32Arr[(0x12b8 + BlockSizes.hgss) / 4] === comp) {
+			if (rawUint32Arr[(0x12b8 + BlockOffsets.block2) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.hgss;
 			}
@@ -157,7 +157,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.bw;
 			}
-			if (rawUint32Arr[(0x21600 + BlockSizes.bw) / 4] === comp) {
+			if (rawUint32Arr[(0x21600 + BlockOffsets.block2bw) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.bw;
 			}
@@ -165,7 +165,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.b2w2;
 			}
-			if (rawUint32Arr[(0x21400 + BlockSizes.b2w2) / 4] === comp) {
+			if (rawUint32Arr[(0x21400 + BlockOffsets.block2b2w2) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.b2w2;
 			}
