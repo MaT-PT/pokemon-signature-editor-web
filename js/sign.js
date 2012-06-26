@@ -22,7 +22,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	var Langs = {fr: 0, en: 1, jp: 2, es: 3, it: 4, de: 5, ko: 6},
 		Formats = {raw: 0, dsv: 1, no$GbaUncompressed: 2, no$GbaCompressed: 3, ToString: function(id) {return {0: 'Raw', 1: 'DSV (DeSmuME)', 2: 'No$GBA Uncompressed', 3: 'No$GBA Compressed'}[id];}},
-		Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, unknown: 0xff, ToString: function(id) {return {0: 'Diamond/Pearl', 1: 'Platinum', 2: 'HeartGold/SoulSilver', 3: 'Black/White', 0xff: 'Unknown'}[id];}},
+		Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, b2w2: 4, unknown: 0xff, ToString: function(id) {return {0: 'Diamond/Pearl', 1: 'Platinum', 2: 'HeartGold/SoulSilver', 3: 'Black/White', 0xff: 'Unknown'}[id];}},
 		Statuses = {good: 0, corrupt: 1, fallbackToBlock1: 2, fallbackToBlock2: 3};
 
 	var SaveFile = function(saveBuffer) {
@@ -133,7 +133,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.dp;
 			}
-			if (rawUint32Arr[0x412dc / 4] === comp) {
+			if (rawUint32Arr[(0x12dc + BlockSizes.dp) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.dp;
 			}
@@ -141,7 +141,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.plat;
 			}
-			if (rawUint32Arr[0x41328 / 4] === comp) {
+			if (rawUint32Arr[(0x1328 + BlockSizes.plat) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.plat;
 			}
@@ -149,7 +149,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.hgss;
 			}
-			if (rawUint32Arr[0x412b8 / 4] === comp) {
+			if (rawUint32Arr[(0x12b8 + BlockSizes.hgss) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.hgss;
 			}
@@ -157,14 +157,24 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.bw;
 			}
-			if (rawUint32Arr[0x45600 / 4] === comp) {
+			if (rawUint32Arr[(0x21600 + BlockSizes.bw) / 4] === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.bw;
+			}
+			if (rawUint32Arr[0x21400 / 4] === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.b2w2;
+			}
+			if (rawUint32Arr[(0x21400 + BlockSizes.b2w2) / 4] === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.b2w2;
 			}
 
 			return ver;
 		};
 		this.version = this.GetSaveVersion();
+
+		var block2Offset = BlockOffsets.block2;
 
 		switch (this.version) {
 			case Versions.dp:
@@ -193,13 +203,20 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.offsetSavCnt = OffsetsSavCnt.bw;
 				this.blockSize = BlockSizes.bw;
 				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
+				block2Offset = BlockOffsets.block2bw;
+				break;
+
+			case Versions.b2w2:
+				this.offsetSign = OffsetsSign.bw;
+				this.offsetSavCnt = OffsetsSavCnt.bw;
+				this.blockSize = BlockSizes.b2w2;
+				this.offsetChkSumFooter = ChkSumFooterOffsets.hgss_bw;
+				block2Offset = BlockOffsets.block2b2w2;
 				break;
 
 			default:
 				return false;
 		}
-
-		var block2Offset = this.version === Versions.bw ? BlockOffsets.block2bw : BlockOffsets.block2;
 
 		this.GetCurrentBlockOffset = function() {
 			if (this.is256kB || this.usableBlocks === UsableBlocks.block1)
@@ -272,9 +289,9 @@ window.addEventListener('DOMContentLoaded', function() {
 										  0xfd2e, 0xed0f, 0xdd6c, 0xcd4d, 0xbdaa, 0xad8b, 0x9de8, 0x8dc9, 0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,
 										  0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0]);
 	SaveFile.BWFooter = {offset: 0x23f00, size: 0x8c, checkSumOffset: 0x23f9a, signatureCheckSumOffset: 0x23f42, signatureBlockSize: 0x658},
-	SaveFile.BlockSizes = {dp: 0xc0ec, plat: 0xcf18, hgss: 0xf618, bw: 0x23f8c},
+	SaveFile.BlockSizes = {dp: 0xc0ec, plat: 0xcf18, hgss: 0xf618, bw: 0x23f8c, b2w2: 0x25f8c},
 	SaveFile.OffsetsSign = {dp: 0x5904, plat: 0x5ba8, hgss: 0x4538, bw: 0x1c100},
-	SaveFile.BlockOffsets = {block1: 0, block2: 0x40000, block2bw: 0x24000},
+	SaveFile.BlockOffsets = {block1: 0, block2: 0x40000, block2bw: 0x24000, block2b2w2: 0x26000},
 	SaveFile.UsableBlocks = {none: 0, block1: 1, block2: 2, both: 3},
 	SaveFile.OffsetsSavCnt = {dp: 0xc0f0, plat: 0xcf1c, hgss: 0xf618, bw: 0x23f8c},
 	SaveFile.ChkSumFooterOffsets = {dp_pt: 0x12, hgss_bw: 0xe};
