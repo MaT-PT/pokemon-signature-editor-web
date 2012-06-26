@@ -337,8 +337,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	//				  Français    EN/US/Aus   Japanese    Español     Italiano    Deutch      Korean
 	var pointers = [['B21C4EA8', 'B21C4D28', 'B21C6588', 'B21C4EC8', 'B21C4E08', 'B21C4E68', 'B21C2328'],
 					['B2101F20', 'B2101D40', 'B2101140', 'B2101F40', 'B2101EA0', 'B2101EE0', 'B2102C40'],
-					['B21118A0', 'B2111880', 'B2110DC0', 'B21118C0', 'B2111820', 'B2111860', 'B2112280'],
-					['B2000024', 'B2000024', 'B2000024', 'B2000024', 'B2000024', 'B2000024', 'B2000024']];
+					['B21118A0', 'B2111880', 'B2110DC0', 'B21118C0', 'B2111820', 'B2111860', 'B2112280']];
 
 	//img.crossOrigin = '';
 
@@ -507,7 +506,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			if(rbs[i].checked && typeof Versions[rbs[i].value] === 'number')
 				return Versions[rbs[i].value];
 
-		document.getElementById('bw_code').checked = true;
+		document.getElementById('b2w2_code').checked = true;
 		return Versions.bw;
 	}
 
@@ -580,7 +579,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			code2 = '',
 			addr1,
 			addr2,
-			pointer = pointers[codeVersion][lang] + ' 00000000\n';
+			pointer = ((codeVersion === Versions.bw || codeVersion === Versions.b2w2) ? 'B2000024' : pointers[codeVersion][lang]) + ' 00000000\n';
 
 		var codeTrigger = '94000130 FCFF0000\n';
 
@@ -602,9 +601,14 @@ window.addEventListener('DOMContentLoaded', function() {
 				break;
 
 			case Versions.bw:
-			default:
 				addr1 = 'E001C9BC';
 				addr2 = 'E001CCBC';
+				break;		
+
+			case Versions.b2w2:
+			default:
+				addr1 = 'E001CA20';
+				addr2 = 'E001CD20';
 				break;				
 		}
 
