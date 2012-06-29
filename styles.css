@@ -1,18 +1,21 @@
 body {
 	font-size: 16px;
+	line-height: 1.25;
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "DejaVu Sans", "Lucida Sans", sans-serif;
 	position: relative;
 }
 .affiliate {
 	position: absolute;
-	right: 1em;
-	top: 1em;
+	right: 0;
+	top: 0;
+}
+.affiliate a {
 	opacity: 0.25;
 	-webkit-transition: all 0.25s ease-in-out;
 	-moz-transition: all 0.25s ease-in-out;
 	transition: all 0.25s ease-in-out;
 }
-.affiliate:hover {
+.affiliate a:hover {
 	opacity: 1;
 }
 img {

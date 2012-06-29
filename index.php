@@ -1,4 +1,4 @@
-<?php $IS_DEBUG = false; ?>
+<?php $IS_DEBUG = true; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +12,7 @@
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
-<?php if (!$IS_DEBUG) { ?><script type="text/javascript">window.onload=function(){new Image().src='//affiliates.mozilla.org/link/banner/19565'}</script><?php } ?>
+<?php if (!$IS_DEBUG) { ?><script type="text/javascript">window.onload=function(){var i=new Image();i.src='//affiliates.mozilla.org/link/banner/19565';i.src='//affiliates.mozilla.org/link/banner/20350'}</script><?php } ?>
 </head>
 <?php ob_flush(); flush(); ?>
 <body>
@@ -99,7 +99,11 @@ You can also double-click it." />
 </div>
 <div class="affiliate">
   <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank">
-    <img src="//affiliates.mozilla.org/media/uploads/banners/c3d1065eacadd1f97d1d54cb962a4f7ac1e9e874.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox" />
+    <img src="//affiliates.mozilla.org/media/uploads/banners/c3d1065eacadd1f97d1d54cb962a4f7ac1e9e874.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." />
+  </a>
+  <br />
+  <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank">
+    <img src="//affiliates.mozilla.org/media/uploads/banners/a47240839834560ba213f2ed7df82697d6bc7766.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." />
   </a>
 </div>
 </body>
