@@ -493,7 +493,7 @@ window.addEventListener('DOMContentLoaded', function() {
 					currByte = save.signBytes[i];
 					offset = (192 * (i & 7) + (i & -8) + 1344 * Math.floor(i / 192)) << 2;	// i & 7 === i % 8 ;  i & -8 === i & 0xfffffff8 === (i >>> 3) << 3 ;  x << 2 === x * 4
 					for (var bitMask = 1; bitMask <= 0x80; bitMask <<= 1) {
-						pixMap[offset] = pixMap[offset + 1] = pixMap[offset + 2] = (currByte & bitMask) ? 0 : 0xff;
+						pixMap[offset + 2] = pixMap[offset + 1] = pixMap[offset] = (currByte & bitMask) ? 0 : 0xff;
 						pixMap[offset + 3] = 255;
 						offset += 4;
 					}
