@@ -129,6 +129,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			var comp = 0xbeefcafe,	// YES, they DID use the value 0xBEEFCAFE and it's a nice way to identify the game version from the save file.
 				ver = Versions.unknown;
 
+			/* -- Diamond/Pearl --*/
 			if (rawUint32Arr[0x12dc / 4] === comp) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.dp;
@@ -137,6 +138,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.dp;
 			}
+			/* -- Platinum -- */
 			if (rawUint32Arr[0x1328 / 4] === comp) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.plat;
@@ -145,6 +147,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.plat;
 			}
+			/* -- HeartGold/SoulSilver -- */
 			if (rawUint32Arr[0x12b8 / 4] === comp) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.hgss;
@@ -153,6 +156,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.hgss;
 			}
+			/* -- Black/White -- */
 			if (rawUint32Arr[0x21600 / 4] === comp) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.bw;
@@ -161,6 +165,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.bw;
 			}
+			/* -- Black 2/White 2 -- */
 			if (rawUint32Arr[0x21400 / 4] === comp) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.b2w2;
@@ -486,10 +491,11 @@ window.addEventListener('DOMContentLoaded', function() {
 				var currByte, offset;
 				for (var i = 0, l = save.signBytes.length; i < l; i++) {
 					currByte = save.signBytes[i];
-					for (var bitMask = 0x80, j = 7; bitMask; bitMask >>>= 1, j--) {
-						offset = (192 * (i % 8) + 8 * Math.floor(i / 8) + 1344 * Math.floor(i / 192) + j) * 4;
-						pixMap[offset] = pixMap[offset + 1] = pixMap[offset + 2] = (currByte & bitMask) ? 0 : 255;
+					offset = (192 * (i & 7) + (i & -8) + 1344 * Math.floor(i / 192)) << 2;	// i & 7 === i % 8 ;  i & -8 === i & 0xfffffff8 === (i >>> 3) << 3 ;  x << 2 === x * 4
+					for (var bitMask = 1; bitMask <= 0x80; bitMask <<= 1) {
+						pixMap[offset] = pixMap[offset + 1] = pixMap[offset + 2] = (currByte & bitMask) ? 0 : 0xff;
 						pixMap[offset + 3] = 255;
+						offset += 4;
 					}
 				}
 
