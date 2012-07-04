@@ -580,7 +580,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	}
 
 	function GenerateARCode(pixMap) {
-		var codeTemp = '',
+		var codeTemp = 0,
 			code1 = '',
 			code2 = '',
 			addr1,
@@ -622,24 +622,24 @@ window.addEventListener('DOMContentLoaded', function() {
 			for (var cX = 0; cX <= 184; cX += 8) {
 				for (var pY = 3 + cY; pY >= cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
-						codeTemp += IsBlack(GetPixel(pixMap, pX, pY)) ? '1' : '0';
-					code1 += Bin2Hex(codeTemp);
+						codeTemp = (codeTemp << 1) + IsBlack(GetPixel(pixMap, pX, pY));
+					code1 += (codeTemp < 16 ? '0' : '') + codeTemp.toString(16);
 
-					codeTemp = '';
+					codeTemp = 0;
 				}
 				code1 += ' ';
 
 				for (var pY = 7 + cY; pY >= 4 + cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
-						codeTemp += IsBlack(GetPixel(pixMap, pX, pY)) ? '1' : '0';
+						codeTemp = (codeTemp << 1) + IsBlack(GetPixel(pixMap, pX, pY));
+					code1 += (codeTemp < 16 ? '0' : '') + codeTemp.toString(16);
 
-					code1 += Bin2Hex(codeTemp);
-
-					codeTemp = '';
+					codeTemp = 0;
 				}
 				code1 += '\n';
 			}
 		}
+		code1 = code1.toUpperCase();
 		if (splitCode) {
 			code2 = codeTrigger + pointer + addr2 + ' 00000300\n' + code1.substring(1728) + 'D2000000 00000000';
 			code1 = codeTrigger + pointer + addr1 + ' 00000300\n' + code1.substr(0, 1728) + 'D2000000 00000000';			
