@@ -12,14 +12,43 @@ String.prototype.toCharCode = function() {
 	for (var i = 0; i < l; i++)
 		arr[i] = this.charCodeAt(i);
 	return arr;
-}
+};
+
+window.URL = window.URL || window.webkitURL;
+
+if (!ArrayBuffer.prototype.slice)
+	ArrayBuffer.prototype.slice = function (begin, end) {
+		var length = this.byteLength;
+		if (begin === undefined)
+			begin = 0;
+		else if (begin > length)
+			begin = length;
+		else if (begin < 0) {
+			if (-begin >= length)
+				begin = 0;
+			else
+				begin += length;
+		}
+		if (end === undefined || end > length)
+			end = length;
+		else if (end < 0) {
+			if (-end >= length)
+				end = 0;
+			else
+				end += length;
+		}
+		length = end - begin;
+		if (length <= 0)
+			return new ArrayBuffer();
+		var ui8 = new Uint8Array(this),
+			result = new ArrayBuffer(length),
+			resultArray = new Uint8Array(result);
+		for (var i = 0; i < length; i++)
+			resultArray[i] = ui8[begin + i];
+		return result;
+	};
 
 window.addEventListener('DOMContentLoaded', function() {
-	if (ArrayBuffer.prototype.slice) {
-		document.getElementById('save_more_formats').style.display = 'inline';
-		document.getElementById('save_only_raw').style.display = 'none';
-	}
-
 	var Langs = {fr: 0, en: 1, jp: 2, es: 3, it: 4, de: 5, ko: 6},
 		Formats = {raw: 0, dsv: 1, no$GbaUncompressed: 2, no$GbaCompressed: 3, ToString: function(id) {return {0: 'Raw', 1: 'DSV (DeSmuME)', 2: 'No$GBA Uncompressed', 3: 'No$GBA Compressed'}[id];}},
 		Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, b2w2: 4, unknown: 0xff, ToString: function(id) {return {0: 'Diamond/Pearl', 1: 'Platinum', 2: 'HeartGold/SoulSilver', 3: 'Black/White', 4: 'Black 2/White 2', 0xff: 'Unknown'}[id];}},
@@ -77,7 +106,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 				case Formats.no$GbaCompressed:
 					var sizeUncomp = uInt32Arr[0x4c / 4],
-						//sizeComp = uInt32Arr[0x48 / 4],
 						srcBuff = new Uint8Array(saveBuffer),
 						dstBuff = new Uint8Array(sizeUncomp),
 						srcPos = 0x50,
@@ -111,17 +139,17 @@ window.addEventListener('DOMContentLoaded', function() {
 
 			return null;
 		};
-		var rawSaveBuffer = this.GetRawSave();
+		this.rawSaveBuffer = this.GetRawSave();
 		var rawUint32Arr;
 		try {
-			rawUint32Arr = new Uint32Array(rawSaveBuffer);
+			rawUint32Arr = new Uint32Array(this.rawSaveBuffer);
 		}
 		catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
 			this.version = Versions.unknown;
 			return false;
 		}
 
-		this.is256kB = rawSaveBuffer.byteLength === 0x40000;
+		this.is256kB = this.rawSaveBuffer.byteLength === 0x40000;
 
 		this.usableBlocks = UsableBlocks.none;
 
@@ -236,29 +264,29 @@ window.addEventListener('DOMContentLoaded', function() {
 				return BlockOffsets.block1;
 			else
 				return block2Offset;
-		}
+		};
 		this.currentBlockOffset = this.GetCurrentBlockOffset();
 
 		this.IsBlockCheckSumOk = function(blockOffset) {
 			if (this.version === Versions.bw || this.version === Versions.b2w2) {
 				var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
-				var signBlockCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
-				var signBlockActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
-				var footerSignActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
+				var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
+				var signBlockActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
+				var footerSignActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
 
-				var footerCheckSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
-				var footerActualCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
+				var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
+				var footerActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
 
 				return signBlockCheckSum === signBlockActualCheckSum &&
 					   signBlockCheckSum === footerSignActualCheckSum &&
 						  footerCheckSum === footerActualCheckSum;
 			}
 			else {
-				var checkSum = GetCheckSum(new Uint8Array(rawSaveBuffer, blockOffset, this.blockSize));
-				var actalCheckSum = new Uint16Array(rawSaveBuffer, blockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0];
-				return checkSum === actalCheckSum;
+				var checkSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset, this.blockSize));
+				var actualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0];
+				return checkSum === actualCheckSum;
 			}
-		}
+		};
 		this.status = this.IsBlockCheckSumOk(this.currentBlockOffset) ? Statuses.good : Statuses.corrupt;
 
 		if (this.status === Statuses.corrupt)
@@ -275,7 +303,48 @@ window.addEventListener('DOMContentLoaded', function() {
 					}
 			}
 
-		this.signBytes = new Uint8Array(rawSaveBuffer, this.currentBlockOffset + this.offsetSign, 0x600);
+		this.signBytes = new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + this.offsetSign, 0x600);
+
+		this.FixCheckSums = function() {
+			if (this.version === Versions.bw || this.version === Versions.b2w2) {
+				/*var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
+				var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
+				var signBlockActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
+				var footerSignActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
+
+				var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
+				var footerActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
+
+				return signBlockCheckSum === signBlockActualCheckSum &&
+					   signBlockCheckSum === footerSignActualCheckSum &&
+						  footerCheckSum === footerActualCheckSum;*/
+			}
+			else {
+				var checkSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset, this.blockSize));
+				new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0] = checkSum;
+				//console.log('New checksum: 0x' + checkSum.toString(16));
+			}
+		};
+
+		this.UpdateSignBytes = function(pixMap) {
+			var binTemp = 0, tmpArr = new Array(0x600), i = 0;
+
+			for (var cY = 0; cY <= 56; cY += 8) {
+				for (var cX = 0; cX <= 184; cX += 8) {
+					for (var pY = cY; pY <= 7 + cY; pY++) {
+						for (var pX = 7 + cX; pX >= cX; pX--)
+							binTemp = (binTemp << 1) + IsBlack(GetPixel(pixMap, pX, pY));
+
+						tmpArr[i++] = binTemp;
+						binTemp = 0;
+					}
+				}
+			}
+
+			this.signBytes.set(tmpArr);
+			this.FixCheckSums();
+			// return new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + this.offsetSign, 0x600);
+		};
 	};
 
 	SaveFile.SeedTable = new Uint16Array([0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -330,6 +399,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		saveSelect = document.getElementById('save_select'),
 		imgLoaded = false,
 		imgMonoLoaded = false,
+		saveLoaded = false,
+		save,
+		saveFileName = '',
 		codeVersion = GetVersion(),
 		lang = GetLang(),
 		splitCode = document.getElementById('split_code').checked;
@@ -450,19 +522,20 @@ window.addEventListener('DOMContentLoaded', function() {
 	function handleSaveFiles(files) {
 		var file = files[0];
 		document.getElementById('file_name').style.visibility = 'visible';
-		document.getElementById('file_name_value').innerHTML = file.name;
+		document.getElementById('file_name_value').innerHTML = saveFileName = file.name;
 		if (typeof FileReader !== 'undefined') {
 			var reader = new FileReader();
 			reader.onload = function(evt) {
-				var saveBuffer = evt.target.result;
-				var save = new SaveFile(saveBuffer);
+				save = new SaveFile(evt.target.result);
 				if (save.version === Versions.unknown) {
 					//uncheckAll('radio_version_save');
 					document.getElementById('save_infos').style.visibility = 'hidden';
 					//document.getElementById('form_save_select').reset();
+					saveLoaded = false;
 					alert('Error: This is not a valid NDS Pokémon save file!');
 					return;
 				}
+				saveLoaded = true;
 				document.getElementById('save_infos').style.visibility = 'visible';
 				document.getElementById('save_version_value').innerHTML = Versions.ToString(save.version);
 				document.getElementById('save_size_value').innerHTML = save.is256kB ? '256&nbsp;kB (2&nbsp;Mb)' : '512&nbsp;kB (4&nbsp;Mb)';
@@ -500,8 +573,11 @@ window.addEventListener('DOMContentLoaded', function() {
 				}
 
 				ctxSave.putImageData(imgd, 0, 0);
-
 				document.getElementById('img_sign_save').src = canvasSave.toDataURL();
+
+				/*
+				console.log(SaveFile.ByteArraysEqual(save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data), save.signBytes));
+				*/
 			};
 			reader.readAsArrayBuffer(file);
 		}
@@ -671,7 +747,8 @@ window.addEventListener('DOMContentLoaded', function() {
 				pixMap[i] = pixMap[i+1] = pixMap[i+2] = (GetBrightness(pixMap[i], pixMap[i+1], pixMap[i+2]) >= threshold ? 255 : 0);
 			ctxMono.putImageData(imgd, 0, 0);
 
-			canvasMono.style.visibility = 'visible';
+			canvasMono.style.display = 'inline';
+			document.getElementById('threshold_wrapper').style.display = 'inline-block';
 			imgMonoLoaded = true;
 
 			refreshCode();
@@ -710,6 +787,45 @@ window.addEventListener('DOMContentLoaded', function() {
 	document.getElementById('img_sign_save').addEventListener('dblclick', function(evt) {
 		if (evt.which === 1 || evt.button === 0) {
 			img.src = this.src;
+			if (evt.stopPropagation)
+				evt.stopPropagation();
+			if (evt.preventDefault)
+				evt.preventDefault();
+			else
+				evt.returnValue = false;
+			return false;
+		}
+	}, false);
+
+	function clickElement(elt){	
+		if (document.createEvent) {
+			var evt = document.createEvent('MouseEvents');
+			evt.initEvent('click', true, true);
+			elt.dispatchEvent(evt);
+		}
+		else if (document.createEventObject)
+			elt.fireEvent('onclick');
+		else
+			elt.click();
+	}
+
+	canvasMono.addEventListener('dblclick', function(evt) {
+		if (evt.which === 1 || evt.button === 0) {
+			if (!saveLoaded)
+				alert('No save file loaded!');
+			else {
+				save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data);
+				var blob = new Blob([save.rawSaveBuffer], {type: 'application/octet-stream'});
+				var oUrl = window.URL.createObjectURL(blob);
+				//window.open(oUrl);
+				var a = document.createElement('A');
+				a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
+				a.href = oUrl;
+				console.log(a);
+				clickElement(a);
+				//window.URL.revokeObjectURL(oUrl);
+			}
+
 			if (evt.stopPropagation)
 				evt.stopPropagation();
 			if (evt.preventDefault)

@@ -4,6 +4,12 @@ body {
 	font-family: "Lucida Sans Unicode", "Lucida Grande", "DejaVu Sans", "Lucida Sans", sans-serif;
 	position: relative;
 }
+#wrapper {
+	max-width: -webkit-calc(100% - 130px);
+	max-width: -moz-calc(100% - 130px);
+	max-width: -o-calc(100% - 130px);
+	max-width: calc(100% - 130px);
+}
 .affiliate {
 	position: absolute;
 	right: 0;
@@ -13,6 +19,7 @@ body {
 	opacity: 0.25;
 	-webkit-transition: all 0.25s ease-in-out;
 	-moz-transition: all 0.25s ease-in-out;
+	-o-transition: all 0.25s ease-in-out;
 	transition: all 0.25s ease-in-out;
 }
 .affiliate a:hover {
@@ -30,7 +37,7 @@ img {
 	border: 1px dotted red;
 }
 #sign_mono {
-	visibility: hidden;
+	display: none;
 	border: 1px solid grey;
 }
 #sign_save {
@@ -49,8 +56,9 @@ img {
 	margin: .6em;
 }
 #threshold_wrapper {
-	display: inline-block;
+	display: none;
 	margin-left: 1em;
+	vertical-align: top;
 }
 fieldset > legend {
 	font-weight: bold;
