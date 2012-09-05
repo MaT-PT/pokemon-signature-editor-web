@@ -8,10 +8,12 @@
 <meta name="keywords" lang="en" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor" />
 <meta name="rating" content="General" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
+<link rel="stylesheet" type="text/css" href="details.css" />
 <title>Signature editor</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
+<script type="text/javascript" src="js/details.js"></script>
 <?php if (!$IS_DEBUG) { ?><script type="text/javascript">window.onload=function(){var i=new Image();i.src='//affiliates.mozilla.org/link/banner/19565';i.src='//affiliates.mozilla.org/link/banner/20350'}</script><?php } ?>
 </head>
 <?php ob_flush(); flush(); ?>
@@ -50,13 +52,112 @@
         <input id="ko_code" name="radio_lang_code" type="radio" value="ko" /><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
       </div>
     </fieldset>
-    <div style="clear: both;"></div>
     <div id="codes">
       <textarea id="result1" style="border: 1px solid blue" rows="10" cols="17" readonly></textarea>
       <textarea id="result2" style="border: 1px solid blue" rows="10" cols="17" readonly></textarea>
       <br />
       <input id="split_code" type="checkbox" checked="checked" /><label for="split_code">Split code</label>
     </div>
+    <details id="trigger_wrapper">
+      <summary>Trigger buttons</summary>
+      <table id="table_code_trigger">
+        <tbody>
+          <tr>
+            <td>
+            </td>
+            <td class="center">
+              <label for="key_up">&#9650;</label><br /><input type="checkbox" name="key" id="key_up" value="UP" />
+            </td>
+            <td>
+            </td>
+            <td style="width: 30px;">
+            </td>
+            <td>
+            </td>
+            <td class="center">
+              <label for="key_x">X</label><br /><input type="checkbox" name="keyXY" id="key_x" value="X" />
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <td class="right">
+              <label for="key_left">&#9664;</label>&nbsp;<input type="checkbox" name="key" id="key_left" value="LEFT" />
+            </td>
+            <td>
+            </td>
+            <td class="left">
+              <input type="checkbox" name="key" id="key_right" value="RIGHT" />&nbsp;<label for="key_right">&#9654;</label>
+            </td>
+            <td>
+            </td>
+            <td class="right">
+              <label for="key_y">Y</label>&nbsp;<input type="checkbox" name="keyXY" id="key_y" value="Y" />
+            </td>
+            <td>
+            </td>
+            <td class="left">
+              <input type="checkbox" name="key" id="key_a" value="A" />&nbsp;<label for="key_a">A</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+            </td>
+            <td class="center">
+              <input type="checkbox" name="key" id="key_down" value="DOWN" /><br /><label for="key_down">&#9660;</label>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td class="center">
+              <input type="checkbox" name="key" id="key_b" value="B" /><br /><label for="key_b">B</label>
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td class="right">
+              <label for="key_l">L</label>&nbsp;<input type="checkbox" name="key" id="key_l" value="L" checked="checked" />
+            </td>
+            <td>
+            </td>
+            <td class="left">
+              <input type="checkbox" name="key" id="key_r" value="R" checked="checked" />&nbsp;<label for="key_r">R</label>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+          </tr>
+          <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td class="right">
+              <label for="key_start">Start</label>&nbsp;<input type="checkbox" name="key" id="key_start" value="START" />
+            </td>
+            <td> 
+            </td>
+            <td class="left">
+              <input type="checkbox" name="key" id="key_select" value="SELECT" />&nbsp;<label for="key_select">Select</label>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <input type="reset" id="reset_checkboxes" value="Reset" />
+    </details>
   </section>
   <section id="save_wrapper">
     <div id="save">
@@ -79,11 +180,12 @@
         Signature: <img id="img_sign_save" width="192" height="64" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQIHWP4zwAAAgEBAMVfG14AAAAASUVORK5CYII=" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
 You can also double-click it." />
         <canvas id="sign_save" width="192" height="64" style="display: none;">[canvas]</canvas>
+        <button id="btn_download_save">Download the modified save file</button>
       </div>
     </div>
   </section>
   <div style="clear: both;"></div>
-  <div style="margin-top: 1em; padding: 1em; border: 1px solid green; background-color: lightgray;">
+  <div style="margin-top: 1em; padding: 1em; border: 1px solid green; background-color: lightgray; display: none;">
     <img src="images/sign_mat_transp.png" alt="M@T bleu" />
     <img src="images/Rectangle.png" alt="Rectangle noir" />
     <!--<img src="images/Pokemon_logo_transp.png" alt="Logo Pok&eacute;mon transparent" />-->
@@ -101,11 +203,11 @@ You can also double-click it." />
 </div>
 <div class="affiliate">
   <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank">
-    <img src="//affiliates.mozilla.org/media/uploads/banners/c3d1065eacadd1f97d1d54cb962a4f7ac1e9e874.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." />
+    <img src="images/download_firefox.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." />
   </a>
   <br />
   <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank">
-    <img src="//affiliates.mozilla.org/media/uploads/banners/a47240839834560ba213f2ed7df82697d6bc7766.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." />
+    <img src="images/download_aurora.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." />
   </a>
 </div>
 </body>

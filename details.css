@@ -1,0 +1,25 @@
+details, summary {
+	display: block;
+}
+
+details > summary {
+	cursor: pointer;
+}
+
+details > summary:hover {
+	text-decoration: underline;
+}
+
+.no-details details:not([open]) > :not(summary) {
+	display: none;
+}
+
+.no-details details > summary:before {
+    content: "\25B6 ";
+	float: left;
+	width: 1.25em;
+}
+
+.no-details details[open] > summary:before {
+    content: "\25BC ";
+}

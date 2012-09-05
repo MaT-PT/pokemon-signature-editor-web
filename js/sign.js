@@ -1,9 +1,7 @@
 /**
 	TODO:
 
-	 - Activateurs pour le code AR
-	 - Injecter une nouvelle signature dans une sauvegarde et la faire télécharger
-	 - Améliorer l'interface
+	 - BW/B2W2 save editing
 **/
 
 String.prototype.toCharCode = function() {
@@ -404,6 +402,8 @@ window.addEventListener('DOMContentLoaded', function() {
 		saveFileName = '',
 		codeVersion = GetVersion(),
 		lang = GetLang(),
+		codeTrigger = GetTrigger(),
+		checkBoxes = document.querySelectorAll('#table_code_trigger input[type="checkbox"]'),
 		splitCode = document.getElementById('split_code').checked;
 
 	function clearCanvas() {
@@ -564,7 +564,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				var currByte, offset;
 				for (var i = 0, l = save.signBytes.length; i < l; i++) {
 					currByte = save.signBytes[i];
-					offset = (192 * (i & 7) + (i & -8) + 1344 * Math.floor(i / 192)) << 2;	// i & 7 === i % 8 ;  i & -8 === i & 0xfffffff8 === (i >>> 3) << 3 ;  x << 2 === x * 4
+					offset = (192 * (i & 7) + (i & -8) + 1344 * Math.floor(i / 192)) << 2;	// INFO: i & 7 === i % 8 ;  i & -8 === i & 0xfffffff8 === (i >>> 3) << 3 ;  x << 2 === x * 4
 					for (var bitMask = 1; bitMask <= 0x80; bitMask <<= 1) {
 						pixMap[offset + 2] = pixMap[offset + 1] = pixMap[offset] = (currByte & bitMask) ? 0 : 0xff;
 						pixMap[offset + 3] = 255;
@@ -585,7 +585,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	function GetVersion() {
 		for (var i = 0, rbs = document.getElementsByName('radio_version_code'), l = rbs.length; i < l; i++)
-			if(rbs[i].checked && typeof Versions[rbs[i].value] === 'number')
+			if (rbs[i].checked && typeof Versions[rbs[i].value] === 'number')
 				return Versions[rbs[i].value];
 
 		document.getElementById('b2w2_code').checked = true;
@@ -594,25 +594,81 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	function GetLang() {
 		for (var i = 0, rbs = document.getElementsByName('radio_lang_code'), l = rbs.length; i < l; i++)
-			if(rbs[i].checked && typeof Langs[rbs[i].value] === 'number')
+			if (rbs[i].checked && typeof Langs[rbs[i].value] === 'number')
 				return Langs[rbs[i].value];
 
 		document.getElementById('fr_code').checked = true;
 		return Langs.fr;
 	}
 
+	function GetTrigger() {
+		var NDSKeys = {
+				NONE: 0xffff,
+				A: 0xfffe,
+				B: 0xfffd,
+				X: 0xfffe,
+				Y: 0xfffd,
+				L: 0xfdff,
+				R: 0xfeff,
+				UP: 0xffbf,
+				DOWN: 0xff7f,
+				LEFT: 0xffdf,
+				RIGHT: 0xffef,
+				START: 0xfff7,
+				SELECT: 0xfffb
+			},
+			trig = NDSKeys.NONE,
+			trigXY = NDSKeys.NONE;
+
+		keys = document.getElementsByName('key');
+		keysXY = document.getElementsByName('keyXY');
+
+		for (var k = 0, l = keys.length; k < l; k++)
+			if (keys[k].checked)
+				trig &= NDSKeys[keys[k].value];
+
+		for (var k = 0, l = keysXY.length; k < l; k++)
+			if (keysXY[k].checked)
+				trigXY &= NDSKeys[keysXY[k].value];
+
+		return   ((trig == 0xffff) ? '' : '94000130 ' + Dec2Hex(trig) + '0000\n') +
+			   ((trigXY == 0xffff) ? '' : '94000136 ' + Dec2Hex(trigXY) + '0000\n');
+	}
+
 	function updateVersion(evt) {
-		if (this.checked) {
-			codeVersion = typeof Versions[this.value] === 'number' ? Versions[this.value] : (document.getElementById('bw').checked = true && Versions.bw);
+		if (evt.target.checked) {
+			codeVersion = typeof Versions[evt.target.value] === 'number' ? Versions[evt.target.value] : (document.getElementById('bw').checked = true && Versions.bw);
 			refreshCode();
 		}
 	}
 
 	function updateLang(evt) {
-		if (this.checked) {
-			lang = typeof Langs[this.value] === 'number' ? Langs[this.value] : (document.getElementById('fr').checked = true && Langs.fr);
+		if (evt.target.checked) {
+			lang = typeof Langs[evt.target.value] === 'number' ? Langs[evt.target.value] : (document.getElementById('fr').checked = true && Langs.fr);
 			refreshCode();
 		}
+	}
+
+	function updateTrigger(evt) {
+		if (evt.target.checked) {
+			switch (evt.target.id) {
+				case 'key_up':
+					document.getElementById('key_down').checked = false;
+					break;
+				case 'key_down':
+					document.getElementById('key_up').checked = false;
+					break;
+				case 'key_left':
+					document.getElementById('key_right').checked = false;
+					break;
+				case 'key_right':
+					document.getElementById('key_left').checked = false;
+					break;
+			}
+		}
+
+		codeTrigger = GetTrigger();
+		refreshCode();
 	}
 
 	for (var i = 0, rbs = document.getElementsByName('radio_version_code'), l = rbs.length; i < l; i++)
@@ -621,9 +677,20 @@ window.addEventListener('DOMContentLoaded', function() {
 	for (var i = 0, rbs = document.getElementsByName('radio_lang_code'), l = rbs.length; i < l; i++)
 		rbs[i].addEventListener('change', updateLang, false);
 
+	for (var i = 0, l = checkBoxes.length; i < l; i++)
+		checkBoxes[i].addEventListener('change', updateTrigger, false);
+
 	document.getElementById('split_code').addEventListener('change', function(evt) {
-		splitCode = this.checked;
+		splitCode = evt.target.checked;
 		document.getElementById('result2').disabled = !splitCode;
+		refreshCode();
+	}, false);
+
+	document.getElementById('reset_checkboxes').addEventListener('click', function(evt) {
+		for (var i = 0, l = checkBoxes.length; i < l; i++)
+			checkBoxes[i].checked = false;
+
+		codeTrigger = '';
 		refreshCode();
 	}, false);
 
@@ -643,9 +710,13 @@ window.addEventListener('DOMContentLoaded', function() {
 				b: pixMap[offset + 2]};
 	}
 
+	function Dec2Hex(n) {
+		return n.toString(16).toUpperCase();
+	}
+
 	function Bin2Hex(bin) {
 		var dec = parseInt(bin, 2);
-		return (dec < 16 ? '0' : '') + dec.toString(16).toUpperCase();
+		return (dec < 16 ? '0' : '') + Dec2Hex(dec).toUpperCase();
 	}
 
 	function Dec2Bin(dec) {
@@ -662,8 +733,6 @@ window.addEventListener('DOMContentLoaded', function() {
 			addr1,
 			addr2,
 			pointer = ((codeVersion === Versions.bw || codeVersion === Versions.b2w2) ? 'B2000024' : pointers[codeVersion][lang]) + ' 00000000\n';
-
-		var codeTrigger = '94000130 FCFF0000\n';
 
 		switch (codeVersion) {
 			case Versions.dp:
@@ -699,7 +768,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				for (var pY = 3 + cY; pY >= cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
 						codeTemp = (codeTemp << 1) + IsBlack(GetPixel(pixMap, pX, pY));
-					code1 += (codeTemp < 16 ? '0' : '') + codeTemp.toString(16);
+					code1 += (codeTemp < 16 ? '0' : '') + Dec2Hex(codeTemp);
 
 					codeTemp = 0;
 				}
@@ -708,7 +777,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				for (var pY = 7 + cY; pY >= 4 + cY; pY--) {
 					for (var pX = 7 + cX; pX >= cX; pX--)
 						codeTemp = (codeTemp << 1) + IsBlack(GetPixel(pixMap, pX, pY));
-					code1 += (codeTemp < 16 ? '0' : '') + codeTemp.toString(16);
+					code1 += (codeTemp < 16 ? '0' : '') + Dec2Hex(codeTemp);
 
 					codeTemp = 0;
 				}
@@ -809,30 +878,22 @@ window.addEventListener('DOMContentLoaded', function() {
 			elt.click();
 	}
 
-	canvasMono.addEventListener('dblclick', function(evt) {
-		if (evt.which === 1 || evt.button === 0) {
-			if (!saveLoaded)
-				alert('No save file loaded!');
-			else {
-				save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data);
-				var blob = new Blob([save.rawSaveBuffer], {type: 'application/octet-stream'});
-				var oUrl = window.URL.createObjectURL(blob);
-				//window.open(oUrl);
-				var a = document.createElement('A');
-				a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
-				a.href = oUrl;
-				console.log(a);
-				clickElement(a);
-				//window.URL.revokeObjectURL(oUrl);
-			}
-
-			if (evt.stopPropagation)
-				evt.stopPropagation();
-			if (evt.preventDefault)
-				evt.preventDefault();
-			else
-				evt.returnValue = false;
-			return false;
+	document.getElementById('btn_download_save').addEventListener('click', function(evt) {
+		if (!saveLoaded)
+			alert('No save file loaded!');
+		else if (!imgMonoLoaded)
+			alert('There is no monochromatic image loaded!\nPlease load an image first.');
+		else {
+			save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data);
+			var blob = new Blob([save.rawSaveBuffer], {type: 'application/octet-stream'});
+			var oUrl = window.URL.createObjectURL(blob);
+			//window.open(oUrl);
+			var a = document.createElement('A');
+			a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
+			a.href = oUrl;
+			console.log(a);
+			clickElement(a);
+			//window.URL.revokeObjectURL(oUrl);
 		}
 	}, false);
 

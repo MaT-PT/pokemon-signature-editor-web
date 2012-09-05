@@ -49,6 +49,10 @@ img {
 	vertical-align: middle;
 	border: 1px solid grey;
 }
+#btn_download_save {
+	display: block;
+	margin-top: .5em;
+}
 #form_image_select {
 	margin: 1em auto;
 }
@@ -93,6 +97,37 @@ fieldset > legend {
     border-radius: .8em;
     padding: .2em;
     background-color: #ccf;
+}
+#trigger_wrapper {
+	float: left;
+	clear: both;
+	margin-top: .5em;
+}
+#table_code_trigger {
+	border: 1px solid black;
+	border-collapse: collapse;
+	margin-top: .25em;
+	margin-bottom: .25em;
+	/*font-size: 75%;*/
+}
+#table_code_trigger input[type="checkbox"] {
+	margin: 3px 4px;
+}
+#table_code_trigger td {
+	padding: 2px;
+}
+table caption {
+	font-weight: bold;
+	margin: .25em;
+}
+.left {
+	text-align: left;
+}
+.center {
+	text-align: center;
+}
+.right {
+	text-align: right;
 }
 #sign, #version_code, #result1 {
 	margin-right: 1em;
