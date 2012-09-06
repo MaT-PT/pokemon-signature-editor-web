@@ -1,7 +1,6 @@
 /**
 	TODO:
 
-	 - BW/B2W2 save editing
 **/
 
 String.prototype.toCharCode = function() {
@@ -268,6 +267,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		this.IsBlockCheckSumOk = function(blockOffset) {
 			if (this.version === Versions.bw || this.version === Versions.b2w2) {
 				var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
+
 				var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
 				var signBlockActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
 				var footerSignActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
@@ -305,22 +305,18 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		this.FixCheckSums = function() {
 			if (this.version === Versions.bw || this.version === Versions.b2w2) {
-				/*var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
-				var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
-				var signBlockActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
-				var footerSignActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
+				var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
 
-				var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
-				var footerActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
+				var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
+				new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0] = signBlockCheckSum;
+				new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.signatureCheckSumOffset, 1)[0] = signBlockCheckSum;
 
-				return signBlockCheckSum === signBlockActualCheckSum &&
-					   signBlockCheckSum === footerSignActualCheckSum &&
-						  footerCheckSum === footerActualCheckSum;*/
+				var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.offset, footerData.size));
+				new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.checkSumOffset, 1)[0] = footerCheckSum;
 			}
 			else {
 				var checkSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset, this.blockSize));
 				new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0] = checkSum;
-				//console.log('New checksum: 0x' + checkSum.toString(16));
 			}
 		};
 
@@ -503,22 +499,6 @@ window.addEventListener('DOMContentLoaded', function() {
 		return false;
 	}, false);
 
-	/*
-	function uncheckAll(name) {
-		for (var i = 0, elts = document.getElementsByName(name), l = elts.length; i < l; i++)
-			elts[i].checked = false;
-	}
-	*/
-
-	/*
-	function n2x(n) {
-		return ((7 - (n % 8)) + 8 * Math.floor(n / 64)) % 192;
-	}
-	function n2y(n) {
-		return Math.floor((n % 64) / 8) + 8 * Math.floor(n / 1536);
-	}
-	*/
-
 	function handleSaveFiles(files) {
 		var file = files[0];
 		document.getElementById('file_name').style.visibility = 'visible';
@@ -528,7 +508,6 @@ window.addEventListener('DOMContentLoaded', function() {
 			reader.onload = function(evt) {
 				save = new SaveFile(evt.target.result);
 				if (save.version === Versions.unknown) {
-					//uncheckAll('radio_version_save');
 					document.getElementById('save_infos').style.visibility = 'hidden';
 					//document.getElementById('form_save_select').reset();
 					saveLoaded = false;
@@ -574,10 +553,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 				ctxSave.putImageData(imgd, 0, 0);
 				document.getElementById('img_sign_save').src = canvasSave.toDataURL();
-
-				/*
-				console.log(SaveFile.ByteArraysEqual(save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data), save.signBytes));
-				*/
 			};
 			reader.readAsArrayBuffer(file);
 		}
@@ -589,7 +564,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				return Versions[rbs[i].value];
 
 		document.getElementById('b2w2_code').checked = true;
-		return Versions.bw;
+		return Versions.b2w2;
 	}
 
 	function GetLang() {
@@ -717,13 +692,6 @@ window.addEventListener('DOMContentLoaded', function() {
 	function Bin2Hex(bin) {
 		var dec = parseInt(bin, 2);
 		return (dec < 16 ? '0' : '') + Dec2Hex(dec).toUpperCase();
-	}
-
-	function Dec2Bin(dec) {
-		var bin = dec.toString(2);
-		while (bin.length < 8)
-			bin = '0' + bin;
-		return bin;
 	}
 
 	function GenerateARCode(pixMap) {
@@ -891,7 +859,6 @@ window.addEventListener('DOMContentLoaded', function() {
 			var a = document.createElement('A');
 			a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
 			a.href = oUrl;
-			console.log(a);
 			clickElement(a);
 			//window.URL.revokeObjectURL(oUrl);
 		}
