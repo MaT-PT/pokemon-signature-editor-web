@@ -7,7 +7,6 @@ body {
 #wrapper {
 	max-width: -webkit-calc(100% - 130px);
 	max-width: -moz-calc(100% - 130px);
-	max-width: -o-calc(100% - 130px);
 	max-width: calc(100% - 130px);
 }
 .affiliate {
@@ -37,11 +36,16 @@ img {
 	border: 1px dotted red;
 }
 #sign_mono {
-	display: none;
+	visibility: hidden;
 	border: 1px solid grey;
 }
 #sign_save {
 	display: none;
+}
+#image_wrapper {
+	float: left;
+	margin-bottom: 1em;
+	margin-right: 1em;
 }
 #img_sign_save {
 	margin-left: .4em;
@@ -49,20 +53,33 @@ img {
 	vertical-align: middle;
 	border: 1px solid grey;
 }
-#btn_download_save {
-	display: block;
-	margin-top: .5em;
-}
 #form_image_select {
-	margin: 1em auto;
+	margin-top: 1em;
+}
+#sign_preview_wrapper {
+	float: left;
+	margin-bottom: 1em;
+	padding: .5em;
+	border: 1px dashed lightgreen;
+	font-size: 1.2em;
+}
+#sign_preview_canvas {
+	background-color: #ccc;
+	vertical-align: middle;
+	margin-left: .4em;
 }
 #threshold {
 	margin: .6em;
 }
 #threshold_wrapper {
-	display: none;
+	visibility: hidden;
+	display: inline-block;
 	margin-left: 1em;
 	vertical-align: top;
+}
+#btn_download_save {
+	display: block;
+	margin-top: .5em;
 }
 fieldset > legend {
 	font-weight: bold;
@@ -81,17 +98,13 @@ fieldset > legend {
 #version_code input[type="radio"] + label:last-child, #lang_code input[type="radio"] + label:last-child {
 	margin-right: 5px;
 }
-.float {
-	float: left;
-}
 #codes {
+	float: left;
 	margin-top: 1em;
 	padding: 1em;
 	border: 1px solid blue;
 	background-color: lightgray;
-	float: left;
 	clear: both;
-	/*text-align: center;*/
 }
 #codes > textarea {
     border-radius: .8em;
@@ -129,6 +142,9 @@ table caption {
 .right {
 	text-align: right;
 }
+.float {
+	float: left;
+}
 #sign, #version_code, #result1 {
 	margin-right: 1em;
 }
@@ -142,6 +158,8 @@ table caption {
 }
 #code_wrapper {
 	margin-right: 1em;
+	margin-bottom: 1em;
+	clear: both;
 }
 
 #save {
@@ -196,17 +214,6 @@ table caption {
 #infos {
 	margin-top: .4em;
 	font-size: 1.2em;
-}
-#sign_preview {
-	margin-top: 1em;
-	padding: .5em;
-	border: 1px dashed lightgreen;
-	display: none;
-}
-#sign_preview header {
-	font-size: 1.2em;
-	font-weight: bold;
-	margin-bottom: .4em;
 }
 #file_name, #save_infos {
 	visibility: hidden;

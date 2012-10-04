@@ -20,16 +20,22 @@
 <?php ob_flush(); flush(); ?>
 <body>
 <div id="wrapper">
-  <canvas id="sign" width="192" height="64">[canvas]</canvas>
-  <canvas id="sign_mono" width="192" height="64">[canvas]</canvas>
-  <div id="threshold_wrapper">
-    Brightness threshold:<br />
-    <input id="threshold" type="range" value="0.5" min="0" max="1" step="0.01" style="width: 112px;" title="Higher value results in a darker image." />
-    <output id="threshold_value" for="threshold"></output>
-  </div>
-  <form id="form_image_select" action="#" onsubmit="return false;">
-    Pick an image file from your computer&nbsp;: &nbsp; <input type="file" id="image_select" accept="image/*" />
-  </form>
+  <section id="image_wrapper">
+    <canvas id="sign" width="192" height="64">[canvas]</canvas>
+    <canvas id="sign_mono" width="192" height="64">[canvas]</canvas>
+    <div id="threshold_wrapper">
+      Brightness threshold:<br />
+      <input id="threshold" type="range" value="0.5" min="0" max="1" step="0.01" style="width: 112px;" title="Higher value results in a darker image." />
+      <output id="threshold_value" for="threshold"></output>
+    </div>
+    <form id="form_image_select" action="#" onsubmit="return false;">
+      Pick an image file from your computer: &nbsp; <input type="file" id="image_select" accept="image/*" />
+    </form>
+  </section>
+  <section id="sign_preview_wrapper">
+    Signature preview:
+    <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
+  </section>
   <section id="code_wrapper">
     <fieldset id="version_code">
       <legend style="font-weight: bold;">Game version</legend>
@@ -54,8 +60,8 @@
       </div>
     </fieldset>
     <div id="codes">
-      <textarea id="result1" style="border: 1px solid blue" rows="10" cols="17" readonly></textarea>
-      <textarea id="result2" style="border: 1px solid blue" rows="10" cols="17" readonly></textarea>
+      <textarea id="result1" style="border: 1px solid blue" rows="10" cols="18" readonly></textarea>
+      <textarea id="result2" style="border: 1px solid blue" rows="10" cols="18" readonly></textarea>
       <br />
       <input id="split_code" type="checkbox" checked="checked" /><label for="split_code">Split code</label>
     </div>
@@ -184,24 +190,13 @@ You can also double-click it." />
         <button id="btn_download_save">Download the modified save file</button>
       </div>
     </div>
-    <div id="sign_preview">
-      <header>
-        Preview new signature:
-          <canvas id="sign_preview_canvas" width="0" height="0">[canvas]</canvas>
-        </div>
-      </header>
-    </div>
   </section>
   <div style="clear: both;"></div>
 </div>
 <div class="affiliate">
-  <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank">
-    <img src="images/download_firefox.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." />
-  </a>
+  <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank"><img src="images/download_firefox.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." /></a>
   <br />
-  <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank">
-    <img src="images/download_aurora.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." />
-  </a>
+  <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank"><img src="images/download_aurora.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." /></a>
 </div>
 </body>
 </html>

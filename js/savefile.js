@@ -289,7 +289,6 @@ var SaveFile = function(saveBuffer) {
 
 		this.signBytes.set(tmpArr);
 		this.FixCheckSums();
-		// return new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + this.offsetSign, 0x600);
 	};
 };
 

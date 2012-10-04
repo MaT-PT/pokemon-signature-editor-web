@@ -45,6 +45,31 @@ if (!ArrayBuffer.prototype.slice)
 		return result;
 	};
 
+function GetPixel(pixMap, x, y) {
+	var offset = 4 * (x + 192 * y);
+	return {r: pixMap[offset],
+			g: pixMap[offset + 1],
+			b: pixMap[offset + 2]};
+}
+
+function IsBlack(pix) {
+	return !(pix.r || pix.g || pix.b);
+}
+
+function GetBrightness(r, g, b) {
+	//return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+	return Math.sqrt(r * r * .241 + g * g * .691 + b * b * .068) / 255;
+}
+
+function Dec2Hex(n) {
+	return n.toString(16).toUpperCase();
+}
+
+function Bin2Hex(bin) {
+	var dec = parseInt(bin, 2);
+	return (dec < 16 ? '0' : '') + Dec2Hex(dec).toUpperCase();
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 	var canvas = document.getElementById('sign'),
 		canvasMono = document.getElementById('sign_mono'),
@@ -333,31 +358,6 @@ window.addEventListener('DOMContentLoaded', function() {
 		refreshCode();
 	}, false);
 
-	function GetBrightness(r, g, b) {
-		//return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-		return Math.sqrt(r * r * .241 + g * g * .691 + b * b * .068) / 255;
-	}
-
-	function IsBlack(pix) {
-		return !(pix.r || pix.g || pix.b);
-	}
-
-	function GetPixel(pixMap, x, y) {
-		var offset = 4 * (x + 192 * y);
-		return {r: pixMap[offset],
-				g: pixMap[offset + 1],
-				b: pixMap[offset + 2]};
-	}
-
-	function Dec2Hex(n) {
-		return n.toString(16).toUpperCase();
-	}
-
-	function Bin2Hex(bin) {
-		var dec = parseInt(bin, 2);
-		return (dec < 16 ? '0' : '') + Dec2Hex(dec).toUpperCase();
-	}
-
 	function GenerateARCode(pixMap) {
 		var codeTemp = 0,
 			code1 = '',
@@ -448,8 +448,8 @@ window.addEventListener('DOMContentLoaded', function() {
 				pixMap[i] = pixMap[i+1] = pixMap[i+2] = (GetBrightness(pixMap[i], pixMap[i+1], pixMap[i+2]) >= threshold ? 255 : 0);
 			ctxMono.putImageData(imgd, 0, 0);
 
-			canvasMono.style.display = 'inline';
-			document.getElementById('threshold_wrapper').style.display = 'inline-block';
+			canvasMono.style.visibility = 'visible';
+			document.getElementById('threshold_wrapper').style.visibility = 'visible';
 			imgMonoLoaded = true;
 
 			refreshCode();
@@ -478,12 +478,6 @@ window.addEventListener('DOMContentLoaded', function() {
 			evt.returnValue = false;
 		return false;
 	}, false);
-
-	/*
-	document.getElementById('test').addEventListener('click', function(evt) {
-		alert('Bonjour :j');
-	}, false);
-	*/
 
 	document.getElementById('img_sign_save').addEventListener('dblclick', function(evt) {
 		if (evt.which === 1 || evt.button === 0) {
@@ -524,7 +518,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
 			a.href = oUrl;
 			clickElement(a);
-			//window.URL.revokeObjectURL(oUrl);
+			setTimeout(function() {window.URL.revokeObjectURL(oUrl);}, 5000);	// Wait a few seconds before revoking the object URL.
 		}
 	}, false);
 
