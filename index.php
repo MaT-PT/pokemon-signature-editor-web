@@ -12,6 +12,7 @@
 <title>Signature editor</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
+<script type="text/javascript" src="js/savefile.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
 <script type="text/javascript" src="js/details.js"></script>
 <?php if (!$IS_DEBUG) { ?><script type="text/javascript">window.onload=function(){var i=new Image();i.src='//affiliates.mozilla.org/link/banner/19565';i.src='//affiliates.mozilla.org/link/banner/20350'}</script><?php } ?>
@@ -161,11 +162,11 @@
   </section>
   <section id="save_wrapper">
     <div id="save">
-      <div class="save_drop_text">
+      <header class="save_drop_text">
         Drop a save file here
-      </div>
+      </header>
       or <a href="#" id="save_select_link">select one from your computer</a>.
-      <aside>Supported formats: Raw, DSV, No$GBA (Compressed &amp; Uncompressed).</span></aside>
+      <aside>Supported formats: Raw, DSV, No$GBA (Compressed &amp; Uncompressed).</aside>
       <form id="form_save_select" action="#" onsubmit="return false;">
         <input type="file" id="save_select" />
       </form>
@@ -183,23 +184,15 @@ You can also double-click it." />
         <button id="btn_download_save">Download the modified save file</button>
       </div>
     </div>
+    <div id="sign_preview">
+      <header>
+        Preview new signature:
+          <canvas id="sign_preview_canvas" width="0" height="0">[canvas]</canvas>
+        </div>
+      </header>
+    </div>
   </section>
   <div style="clear: both;"></div>
-  <div style="margin-top: 1em; padding: 1em; border: 1px solid green; background-color: lightgray; display: none;">
-    <img src="images/sign_mat_transp.png" alt="M@T bleu" />
-    <img src="images/Rectangle.png" alt="Rectangle noir" />
-    <!--<img src="images/Pokemon_logo_transp.png" alt="Logo Pok&eacute;mon transparent" />-->
-    <br />
-    <!--
-    <p>
-      <a href="http://example.com/">Un lien&hellip;</a>
-      <br />
-      <a href="http://www.plixup.com/pics_core2/12867256195490Pokemon.bmp">Un lien vers une image externe&hellip;</a>
-      <br />
-    </p>
-    -->
-    <!--<button id="test">test</button>-->
-  </div>
 </div>
 <div class="affiliate">
   <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank">

@@ -159,10 +159,7 @@ table caption {
 	margin-top: .5em;
 	font-style: italic;
 }
-#save_more_formats {
-	display: none;
-}
-.save_drop_text {
+#save header {
 	font-size: 1.5em;
 	margin-bottom: .4em;
 }
@@ -199,6 +196,17 @@ table caption {
 #infos {
 	margin-top: .4em;
 	font-size: 1.2em;
+}
+#sign_preview {
+	margin-top: 1em;
+	padding: .5em;
+	border: 1px dashed lightgreen;
+	display: none;
+}
+#sign_preview header {
+	font-size: 1.2em;
+	font-weight: bold;
+	margin-bottom: .4em;
 }
 #file_name, #save_infos {
 	visibility: hidden;
