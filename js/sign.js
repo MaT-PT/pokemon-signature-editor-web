@@ -439,7 +439,6 @@ window.addEventListener('DOMContentLoaded', function() {
 		codeBox1.value = codes[0];
 		codeBox2.value = codes[1];
 		codeBox1.disabled = false;
-		codeBox1.disabled = false;
 		codeBox2.disabled = !splitCode;
 	}
 
