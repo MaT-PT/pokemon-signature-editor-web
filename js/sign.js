@@ -202,7 +202,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				save = new SaveFile(evt.target.result);
 				if (save.version === Versions.unknown) {
 					document.getElementById('save_infos').style.visibility = 'hidden';
-					//document.getElementById('form_save_select').reset();
+					document.getElementById('form_save_select').reset();
 					saveLoaded = false;
 					alert('Error: This is not a valid NDS Pokémon save file!');
 					return;
@@ -265,8 +265,8 @@ window.addEventListener('DOMContentLoaded', function() {
 			if (rbs[i].checked && typeof Langs[rbs[i].value] === 'number')
 				return Langs[rbs[i].value];
 
-		document.getElementById('fr_code').checked = true;
-		return Langs.fr;
+		document.getElementById('en_code').checked = true;
+		return Langs.en;
 	}
 
 	function GetTrigger() {

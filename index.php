@@ -50,8 +50,8 @@
     <fieldset id="lang_code">
       <legend>Game Language</legend>
       <div class="float">
-        <input id="fr_code" name="radio_lang_code" type="radio" value="fr" checked="checked" /><label for="fr_code">Fran&ccedil;ais</label><br />
-        <input id="en_code" name="radio_lang_code" type="radio" value="en" /><label for="en_code">UK/US/Aus</label><br />
+        <input id="fr_code" name="radio_lang_code" type="radio" value="fr" /><label for="fr_code">Fran&ccedil;ais</label><br />
+        <input id="en_code" name="radio_lang_code" type="radio" value="en" checked="checked" /><label for="en_code">UK/US/Aus</label><br />
         <input id="jp_code" name="radio_lang_code" type="radio" value="jp" /><label for="jp_code">&#26085;&#26412;&#35486; (Japanese)</label><br />
         <input id="es_code" name="radio_lang_code" type="radio" value="es" /><label for="es_code">Español</label><br />
         <input id="it_code" name="radio_lang_code" type="radio" value="it" /><label for="it_code">Italiano</label>
@@ -188,7 +188,7 @@ Enter each part as a separate code.">Split code</label>
         <div id="save_size">Size: <output id="save_size_value"></output></div>
         <div id="save_status">Status: <output id="save_status_value"></output></div>
         <div id="save_format">Format: <output id="save_format_value"></output></div>
-        Signature: <img id="img_sign_save" width="192" height="64" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQIHWP4zwAAAgEBAMVfG14AAAAASUVORK5CYII=" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
+        Signature: <img id="img_sign_save" width="192" height="64" src="data:image/gif,GIF89a!%00!%00!!!,!!!!!%00!%00;" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
 You can also double-click it." />
         <canvas id="sign_save" width="192" height="64" style="display: none;">[canvas]</canvas>
         <button id="btn_download_save">Download the modified save file</button>
