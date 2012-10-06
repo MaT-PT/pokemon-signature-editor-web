@@ -89,7 +89,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		lang = GetLang(),
 		codeTrigger = GetTrigger(),
 		checkBoxes = document.querySelectorAll('#table_code_trigger input[type="checkbox"]'),
-		splitCode = document.getElementById('split_code').checked;
+		splitCode = document.getElementById('split_code').checked,
+		codeBox1 = document.getElementById('code_box1'),
+		codeBox2 = document.getElementById('code_box2');
 
 	function clearCanvas() {
 		ctx.fillStyle = 'rgb(255,255,255)';
@@ -106,7 +108,9 @@ window.addEventListener('DOMContentLoaded', function() {
 	ctx.fillText('Drop a 192×64px image here', 25, 35);
 	ctxMono.fillText('This will be the final signature', 20, 35);
 
-	document.getElementById('result1').value = document.getElementById('result2').value = '';
+	codeBox1.value = codeBox2.value = '';
+	codeBox1.disabled = true;
+	codeBox2.disabled = true;
 
 	if (imageSelect.files.length > 0)
 		handleImageFiles(imageSelect.files);
@@ -346,7 +350,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	document.getElementById('split_code').addEventListener('change', function(evt) {
 		splitCode = evt.target.checked;
-		document.getElementById('result2').disabled = !splitCode;
 		refreshCode();
 	}, false);
 
@@ -433,8 +436,11 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		var pixMap = ctxMono.getImageData(0, 0, canvasMono.width, canvasMono.height).data,
 			codes = GenerateARCode(pixMap);
-		document.getElementById('result1').value = codes[0];
-		document.getElementById('result2').value = codes[1];
+		codeBox1.value = codes[0];
+		codeBox2.value = codes[1];
+		codeBox1.disabled = false;
+		codeBox1.disabled = false;
+		codeBox2.disabled = !splitCode;
 	}
 
 	function makeMonoImage() {

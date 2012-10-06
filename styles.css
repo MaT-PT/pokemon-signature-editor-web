@@ -58,9 +58,17 @@ img {
 }
 #sign_preview_wrapper {
 	float: left;
+	display: table;
+	visibility: hidden;
 	margin-bottom: 1em;
-	padding: .5em;
+	padding: .8em;
+	height: 88px;
 	border: 1px dashed lightgreen;
+}
+#sign_preview_middle {
+	display: table-cell;
+	white-space: nowrap;
+	vertical-align: middle;
 	font-size: 1.2em;
 }
 #sign_preview_canvas {
@@ -68,14 +76,14 @@ img {
 	vertical-align: middle;
 	margin-left: .4em;
 }
-#threshold {
-	margin: .6em;
-}
 #threshold_wrapper {
 	visibility: hidden;
 	display: inline-block;
 	margin-left: 1em;
 	vertical-align: top;
+}
+#threshold {
+	margin: .6em;
 }
 #btn_download_save {
 	display: block;
@@ -101,15 +109,18 @@ fieldset > legend {
 #codes {
 	float: left;
 	margin-top: 1em;
-	padding: 1em;
-	border: 1px solid blue;
-	background-color: lightgray;
+	text-align: center;
+	width: 100%;
 	clear: both;
 }
 #codes > textarea {
     border-radius: .8em;
     padding: .2em;
+	border: 1px solid gray;
+}
+#codes > textarea:not([disabled]) {
     background-color: #ccf;
+	border: 1px solid blue;
 }
 #trigger_wrapper {
 	float: left;
@@ -145,11 +156,11 @@ table caption {
 .float {
 	float: left;
 }
-#sign, #version_code, #result1 {
+#sign, #version_code, #code_box1 {
 	margin-right: 1em;
 }
 #split_code {
-	margin-top: .4em;
+	margin-top: .5em;
 }
 #code_wrapper, #save_wrapper {
 	float: left;

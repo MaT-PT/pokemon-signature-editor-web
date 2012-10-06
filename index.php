@@ -33,8 +33,10 @@
     </form>
   </section>
   <section id="sign_preview_wrapper">
-    Signature preview:
-    <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
+    <div id="sign_preview_middle">
+      Signature preview:
+      <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
+    </div>
   </section>
   <section id="code_wrapper">
     <fieldset id="version_code">
@@ -60,10 +62,12 @@
       </div>
     </fieldset>
     <div id="codes">
-      <textarea id="result1" style="border: 1px solid blue" rows="10" cols="18" readonly></textarea>
-      <textarea id="result2" style="border: 1px solid blue" rows="10" cols="18" readonly></textarea>
+      <textarea id="code_box1" rows="10" cols="18" readonly></textarea>
+      <textarea id="code_box2" rows="10" cols="18" readonly></textarea>
       <br />
-      <input id="split_code" type="checkbox" checked="checked" /><label for="split_code">Split code</label>
+      <input id="split_code" type="checkbox" checked="checked" title="Split the code into two shorter parts for emulators such as No$GBA.
+Enter each part as a separate code." /><label for="split_code" title="Split the code into two shorter parts for emulators such as No$GBA.
+Enter each part as a separate code.">Split code</label>
     </div>
     <details id="trigger_wrapper">
       <summary>Trigger buttons</summary>
