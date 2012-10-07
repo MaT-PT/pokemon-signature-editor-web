@@ -1,15 +1,15 @@
-<?php $IS_DEBUG = true; ?>
+<?php $IS_DEBUG = ($_SERVER['SERVER_NAME'] != 'pkm-sign-editor.olympe.in'); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <meta name="author" lang="en" content="M@T" />
-<meta name="description" lang="en" content="Pok&eacute;mon signature editor" />
-<meta name="keywords" lang="en" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor" />
+<meta name="description" lang="en" content="Pok&eacute;mon Signature Editor" />
+<meta name="keywords" lang="en" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor, online, javascript, html5" />
 <meta name="rating" content="General" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <link rel="stylesheet" type="text/css" href="details.css" />
-<title>Signature editor</title>
+<title>Pok&eacute;mon Signature Editor &mdash; Online version</title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/savefile.js"></script>
