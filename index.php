@@ -62,8 +62,8 @@
       </div>
     </fieldset>
     <div id="codes">
-      <textarea id="code_box1" rows="10" cols="18" readonly></textarea>
-      <textarea id="code_box2" rows="10" cols="18" readonly></textarea>
+      <textarea id="code_box1" rows="10" cols="18" readonly="readonly"></textarea>
+      <textarea id="code_box2" rows="10" cols="18" readonly="readonly"></textarea>
       <br />
       <input id="split_code" type="checkbox" checked="checked" title="Split the code into two shorter parts for emulators such as No$GBA.
 Enter each part as a separate code." /><label for="split_code" title="Split the code into two shorter parts for emulators such as No$GBA.
