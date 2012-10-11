@@ -105,7 +105,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	//img.crossOrigin = '';
 
-	ctx.fillText('Drop a 192×64px image here', 25, 35);
+	ctx.fillText('Drop a 192×64px image here', 27, 25);
+	ctx.fillText('- or -', 85, 35);
+	ctx.fillText('select one below', 57, 45);
 	ctxMono.fillText('This will be the final signature', 20, 35);
 
 	codeBox1.value = codeBox2.value = '';

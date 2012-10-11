@@ -1,4 +1,14 @@
-<?php $IS_DEBUG = ($_SERVER['SERVER_NAME'] != 'pkm-sign-editor.olympe.in'); ?>
+<?php
+$IS_DEBUG = ($_SERVER['SERVER_NAME'] != 'pkm-sign-editor.olympe.in');
+
+$langs = ['en', 'fr'];
+$lang = $def_lang = $langs[0];
+
+if (isset($_GET['lang']) && in_array($_GET['lang'], $langs))
+  $lang = $_GET['lang'];
+
+require_once('l10n.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +19,18 @@
 <meta name="rating" content="General" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <link rel="stylesheet" type="text/css" href="details.css" />
-<title>Pok&eacute;mon Signature Editor &mdash; Online version</title>
+<title><?php show_msg('doc_title'); ?></title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+<script type="text/javascript">
+  userLanguage = '<?php echo $lang; ?>';
+</script>
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/savefile.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
 <script type="text/javascript" src="js/details.js"></script>
-<?php if (!$IS_DEBUG) { ?>
-<script type="text/javascript">window.onload=function(){var i=new Image();i.src='//affiliates.mozilla.org/link/banner/19565';i.src='//affiliates.mozilla.org/link/banner/20350'}</script>
+<?php if (!$IS_DEBUG) {
+//<script type="text/javascript">window.onload=function(){var i=new Image();i.src='//affiliates.mozilla.org/link/banner/19565';i.src='//affiliates.mozilla.org/link/banner/20350'}</script>
+?>
 <script type="text/javascript">var _gaq=_gaq||[];_gaq.push(['_setAccount','UA-23228708-8']);
 _gaq.push(['_trackPageview']);(function(){var ga=document.createElement('script');ga.type='text/javascript';ga.async=true;
 ga.src=('https:'==document.location.protocol?'https://ssl':'http://www')+'.google-analytics.com/ga.js';
@@ -30,53 +44,51 @@ var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s)
     <canvas id="sign" width="192" height="64">[canvas]</canvas>
     <canvas id="sign_mono" width="192" height="64">[canvas]</canvas>
     <div id="threshold_wrapper">
-      Brightness threshold:<br />
-      <input id="threshold" type="range" value="0.5" min="0" max="1" step="0.01" style="width: 112px;" title="Higher value results in a darker image." />
+      <?php show_msg('brightness_threshold'); ?><br />
+      <input id="threshold" type="range" value="0.5" min="0" max="1" step="0.01" style="width: 112px;" title="<?php show_msg('threshold_title'); ?>" />
       <output id="threshold_value" for="threshold"></output>
     </div>
     <form id="form_image_select" action="#" onsubmit="return false;">
-      Pick an image file from your computer: &nbsp; <input type="file" id="image_select" accept="image/*" />
+      <?php show_msg('pick_image'); ?> &nbsp; <input type="file" id="image_select" accept="image/*" />
     </form>
   </section>
   <section id="sign_preview_wrapper">
     <div id="sign_preview_middle">
-      Signature preview:
+      <?php show_msg('sign_preview'); ?> 
       <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
     </div>
   </section>
   <section id="code_wrapper">
     <fieldset id="version_code">
-      <legend style="font-weight: bold;">Game version</legend>
-      <input id="dp_code" name="radio_version_code" type="radio" value="dp" /><label for="dp_code">Diamond/Pearl</label><br />
-      <input id="plat_code" name="radio_version_code" type="radio" value="plat" /><label for="plat_code">Platinum</label><br />
-      <input id="hgss_code" name="radio_version_code" type="radio" value="hgss" /><label for="hgss_code">HeartGold/SoulSilver</label><br />
-      <input id="bw_code" name="radio_version_code" type="radio" value="bw" /><label for="bw_code">Black/White</label><br />
-      <input id="b2w2_code" name="radio_version_code" type="radio" value="b2w2" checked="checked" /><label for="b2w2_code">Black 2/White 2</label>
+      <legend style="font-weight: bold;"><?php show_msg('game_version'); ?></legend>
+      <input id="dp_code" name="radio_version_code" type="radio" value="dp" /><label for="dp_code"><?php show_msg('ver_dp'); ?></label><br />
+      <input id="plat_code" name="radio_version_code" type="radio" value="plat" /><label for="plat_code"><?php show_msg('ver_plat'); ?></label><br />
+      <input id="hgss_code" name="radio_version_code" type="radio" value="hgss" /><label for="hgss_code"><?php show_msg('ver_hgss'); ?></label><br />
+      <input id="bw_code" name="radio_version_code" type="radio" value="bw" /><label for="bw_code"><?php show_msg('ver_bw'); ?></label><br />
+      <input id="b2w2_code" name="radio_version_code" type="radio" value="b2w2" checked="checked" /><label for="b2w2_code"><?php show_msg('ver_b2w2'); ?></label>
     </fieldset>
     <fieldset id="lang_code">
-      <legend>Game Language</legend>
+      <legend><?php show_msg('game_lang'); ?></legend>
       <div class="float">
-        <input id="fr_code" name="radio_lang_code" type="radio" value="fr" /><label for="fr_code">Fran&ccedil;ais</label><br />
-        <input id="en_code" name="radio_lang_code" type="radio" value="en" checked="checked" /><label for="en_code">UK/US/Aus</label><br />
-        <input id="jp_code" name="radio_lang_code" type="radio" value="jp" /><label for="jp_code">&#26085;&#26412;&#35486; (Japanese)</label><br />
-        <input id="es_code" name="radio_lang_code" type="radio" value="es" /><label for="es_code">Español</label><br />
-        <input id="it_code" name="radio_lang_code" type="radio" value="it" /><label for="it_code">Italiano</label>
+        <input id="fr_code" name="radio_lang_code" type="radio" value="fr" <?php if ($lang === 'fr') echo 'checked="checked" '; ?>/><label for="fr_code">Fran&ccedil;ais</label><br />
+        <input id="en_code" name="radio_lang_code" type="radio" value="en" <?php if ($lang === 'en') echo 'checked="checked" '; ?>/><label for="en_code">UK/US/Aus</label><br />
+        <input id="jp_code" name="radio_lang_code" type="radio" value="jp" <?php if ($lang === 'jp') echo 'checked="checked" '; ?>/><label for="jp_code">&#26085;&#26412;&#35486; (Japanese)</label><br />
+        <input id="es_code" name="radio_lang_code" type="radio" value="es" <?php if ($lang === 'es') echo 'checked="checked" '; ?>/><label for="es_code">Español</label><br />
+        <input id="it_code" name="radio_lang_code" type="radio" value="it" <?php if ($lang === 'it') echo 'checked="checked" '; ?>/><label for="it_code">Italiano</label>
       </div>
       <div class="float">
-        <input id="de_code" name="radio_lang_code" type="radio" value="de" /><label for="de_code">Deutch</label><br />
-        <input id="ko_code" name="radio_lang_code" type="radio" value="ko" /><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
+        <input id="de_code" name="radio_lang_code" type="radio" value="de" <?php if ($lang === 'de') echo 'checked="checked" '; ?>/><label for="de_code">Deutch</label><br />
+        <input id="ko_code" name="radio_lang_code" type="radio" value="ko" <?php if ($lang === 'ko') echo 'checked="checked" '; ?>/><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
       </div>
     </fieldset>
     <div id="codes">
       <textarea id="code_box1" rows="10" cols="18" readonly="readonly"></textarea>
       <textarea id="code_box2" rows="10" cols="18" readonly="readonly"></textarea>
       <br />
-      <input id="split_code" type="checkbox" checked="checked" title="Split the code into two shorter parts for emulators such as No$GBA.
-Enter each part as a separate code." /><label for="split_code" title="Split the code into two shorter parts for emulators such as No$GBA.
-Enter each part as a separate code.">Split code</label>
+      <input id="split_code" type="checkbox" checked="checked" title="<?php show_msg('split_code_title'); ?>" /><label for="split_code" title="<?php show_msg('split_code_title'); ?>"><?php show_msg('split_code'); ?></label>
     </div>
     <details id="trigger_wrapper">
-      <summary>Trigger buttons</summary>
+      <summary><?php show_msg('triggers'); ?></summary>
       <table id="table_code_trigger">
         <tbody>
           <tr>
@@ -179,34 +191,33 @@ Enter each part as a separate code.">Split code</label>
   <section id="save_wrapper">
     <div id="save">
       <header class="save_drop_text">
-        Drop a save file here
+        <?php show_msg('drop_save'); ?>
       </header>
-      or <a href="#" id="save_select_link">select one from your computer</a>.
-      <aside>Supported formats: Raw, DSV, No$GBA (Compressed &amp; Uncompressed).</aside>
+      <?php show_msg('or'); ?> <a href="#" id="save_select_link"><?php show_msg('select_save'); ?></a>.
+      <aside><?php show_msg('supported_formats'); ?> Raw, DSV, No$GBA (Compressed &amp; Uncompressed).</aside>
       <form id="form_save_select" action="#" onsubmit="return false;">
         <input type="file" id="save_select" />
       </form>
     </div>
     <div id="infos">
-      <div id="file_name">File name: <output id="file_name_value"></output></div>
+      <div id="file_name"><?php show_msg('file_name'); ?> <output id="file_name_value"></output></div>
       <div id="save_infos">
-        <div id="save_version">Version: <output id="save_version_value"></output></div>
-        <div id="save_size">Size: <output id="save_size_value"></output></div>
-        <div id="save_status">Status: <output id="save_status_value"></output></div>
-        <div id="save_format">Format: <output id="save_format_value"></output></div>
-        Signature: <img id="img_sign_save" width="192" height="64" src="data:image/gif,GIF89a!%00!%00!!!,!!!!!%00!%00;" alt="Signature image" title="Drag 'n drop this picture onto the top left-hand canvas to generate an AR code.
-You can also double-click it." />
+        <div id="save_version"><?php show_msg('save_version'); ?> <output id="save_version_value"></output></div>
+        <div id="save_size"><?php show_msg('save_size'); ?> <output id="save_size_value"></output></div>
+        <div id="save_status"><?php show_msg('save_status'); ?> <output id="save_status_value"></output></div>
+        <div id="save_format"><?php show_msg('save_format'); ?> <output id="save_format_value"></output></div>
+        <?php show_msg('save_sign'); ?> <img id="img_sign_save" width="192" height="64" src="data:image/gif,GIF89a!%00!%00!!!,!!!!!%00!%00;" alt="Signature image" title="<?php show_msg('save_sign_title'); ?>" />
         <canvas id="sign_save" width="192" height="64" style="display: none;">[canvas]</canvas>
-        <button id="btn_download_save">Download the modified save file</button>
+        <button id="btn_download_save"><?php show_msg('download_save'); ?></button>
       </div>
     </div>
   </section>
   <div style="clear: both;"></div>
 </div>
 <div class="affiliate">
-  <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank"><img src="images/download_firefox.png" alt="Download Firefox" title="This website works best with the latest version of Mozilla Firefox." /></a>
+  <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank"><img src="images/download_firefox.png" alt="Download Firefox" title="<?php show_msg('download_firefox_title'); ?>" /></a>
   <br />
-  <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank"><img src="images/download_aurora.png" alt="Download Aurora" title="Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technologies." /></a>
+  <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank"><img src="images/download_aurora.png" alt="Download Aurora" title="<?php show_msg('download_aurora_title'); ?>" /></a>
 </div>
 </body>
 </html>
