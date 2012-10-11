@@ -9,20 +9,24 @@ body {
 	max-width: -moz-calc(100% - 130px);
 	max-width: calc(100% - 130px);
 }
-.affiliate {
+#right {
 	position: absolute;
 	right: 0;
 	top: 0;
 }
-.affiliate a {
+#affiliate a {
 	opacity: 0.25;
 	-webkit-transition: all 0.25s ease-in-out;
 	-moz-transition: all 0.25s ease-in-out;
 	-o-transition: all 0.25s ease-in-out;
 	transition: all 0.25s ease-in-out;
 }
-.affiliate a:hover {
+#affiliate a:hover {
 	opacity: 1;
+}
+#languages {
+	margin-top: 1em;
+	text-align: center;
 }
 img {
 	border: 0;
