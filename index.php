@@ -1,11 +1,16 @@
 <?php
 $IS_DEBUG = ($_SERVER['SERVER_NAME'] != 'pkm-sign-editor.olympe.in');
 
-$langs = ['en', 'fr'];
-$lang = $def_lang = $langs[0];
+$langs = ['fr', 'en', 'jp', 'es', 'it', 'de', 'ko'];
+$lang = $langs[0];
+$def_lang = $langs[1];
 
-if (isset($_GET['lang']) && in_array($_GET['lang'], $langs))
-  $lang = $_GET['lang'];
+if (isset($_GET['lang'])) {
+  if (in_array(strtolower($_GET['lang']), $langs))
+    $lang = strtolower($_GET['lang']);
+  else
+    $lang = $def_lang;
+}
 
 require_once('l10n.php');
 ?>
@@ -22,7 +27,8 @@ require_once('l10n.php');
 <title><?php show_msg('doc_title'); ?></title>
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
 <script type="text/javascript">
-  userLanguage = '<?php echo $lang; ?>';
+  userLang = '<?php echo $lang; ?>';
+  defaultUserLang = '<?php echo $def_lang; ?>';
 </script>
 <script type="text/javascript" src="js/html5slider.js"></script>
 <script type="text/javascript" src="js/savefile.js"></script>

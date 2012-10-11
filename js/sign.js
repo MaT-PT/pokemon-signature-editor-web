@@ -1,6 +1,7 @@
 /**
 	TODO:
-
+	 - 'Real life' signature preview, with trainer card background and possibly animations.
+	 - Add some help withing the page.
 **/
 
 String.prototype.toCharCode = function() {
@@ -65,6 +66,123 @@ function Dec2Hex(n) {
 	return n.toString(16).toUpperCase();
 }
 
+// Localization
+var msgs = {
+	canvas_text: {
+		en: [{
+				text: 'Drop a 192×64 px image here',
+				x: 25,
+				y: 25
+			},
+			{
+				text: '- or -',
+				x: 85,
+				y: 35
+			},
+			{
+				text: 'select one below',
+				x: 56,
+				y: 45
+			},
+		],
+		fr: [{
+				text: 'Déposez une image de 192×64 px ici',
+				x: 8,
+				y: 25
+			},
+			{
+				text: '- ou -',
+				x: 84,
+				y: 35
+			},
+			{
+				text: 'sélectionnez-en une ci-dessous',
+				x: 23,
+				y: 45
+			},
+		]
+	},
+	canvas_mono_text: {
+		en: [{
+				text: 'This will be the final signature',
+				x: 20,
+				y: 35
+			}],
+		fr: [{
+				text: 'Ceci sera la signature finale.',
+				x: 29,
+				y: 35
+			}]
+	},
+	version_names: {
+		en: {
+			0: 'Diamond/Pearl',
+			1: 'Platinum',
+			2: 'HeartGold/SoulSilver',
+			3: 'Black/White',
+			4: 'Black 2/White 2',
+			0xff: 'Unknown'
+		},
+		fr: {
+			0: 'Diamant/Perle',
+			1: 'Platine',
+			2: 'HeartGold/SoulSilver',
+			3: 'Noir/Blanc',
+			4: 'Noir 2/Blanc 2',
+			0xff: 'Inconnu'
+		}
+	},
+	status_names: {
+		en: {
+			0: 'Good',
+			1: 'Corrupt',
+			2: 'Using block 1 (block 2 is corrupt)',
+			3: 'Using block 2 (block 1 is corrupt)'
+		},
+		fr: {
+			0: 'Bon',
+			1: 'Corrompu',
+			2: 'Utilisation du bloc 1 (bloc 2 corrompu)',
+			3: 'Utilisation du bloc 2 (bloc 1 corrompu)'
+		}
+	},
+	img_load_error: {
+		en: 'Error: The image seems invalid, or is from an external domain which doesn\'t allow cross-origin resource sharing.',
+		fr: 'Erreur : L\'image semble invalide, ou alors elle provient d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing".'
+	},
+	save_error: {
+		en: 'Error: This is not a valid NDS Pokémon save file!',
+		fr: 'Erreur : Ce n\'est pas une sauvegarde de Pokémon sur NDS valide !'
+	},
+	img_process_error: {
+		en: 'Error: The image is probably from an external domain which doesn\'t allow cross-origin resource sharing, therefore the browser doesn\'t allow reading it\'s data for security reasons.\n\nPlease reload this page (F5) and try again with another image.\n\nError was: ',
+		fr: 'Erreur : L\'image est probablement d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing", donc le navigateur empêche la lecture de ses données pour des raisons de sécurité.\n\nVeuillez rafraîchir cette page (F5) et réessayer avec une autre image.\n\nL\'erreur était : '
+	},
+	no_save_loaded: {
+		en: 'No save file loaded!',
+		fr: 'Aucun fichier de sauvegarde n\'a été chargé !'
+	},
+	no_mono_image: {
+		en: 'No image loaded!\nPlease select an image in the top left-hand corner.',
+		fr: 'Aucune image n\'a été chargée !\nVeuillez sélectionner une image en haut à gauche.'
+	},
+	kB: {
+		en: 'kB',
+		fr: 'ko'
+	},
+};
+
+function GetMsg(name) {
+	if (typeof msgs[name] === 'undefined')
+		return '(unknown message id \'' + name + '\')';
+	else {
+		if (typeof msgs[name][userLang] === 'undefined')
+			return msgs[name][defaultUserLang];
+		else
+			return msgs[name][userLang];
+	}
+}
+
 window.addEventListener('DOMContentLoaded', function() {
 	var canvas = document.getElementById('sign'),
 		canvasMono = document.getElementById('sign_mono'),
@@ -81,7 +199,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		save,
 		saveFileName = '',
 		codeVersion = GetVersion(),
-		lang = GetLang(),
+		codeLang = GetLang(),
 		codeTrigger = GetTrigger(),
 		checkBoxes = document.querySelectorAll('#table_code_trigger input[type="checkbox"]'),
 		splitCode = document.getElementById('split_code').checked,
@@ -100,10 +218,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	//img.crossOrigin = '';
 
-	ctx.fillText('Drop a 192×64px image here', 27, 25);
-	ctx.fillText('- or -', 85, 35);
-	ctx.fillText('select one below', 57, 45);
-	ctxMono.fillText('This will be the final signature', 20, 35);
+	GetMsg('canvas_text').forEach(function(e) {
+		ctx.fillText(e.text, e.x, e.y);
+	});
+	GetMsg('canvas_mono_text').forEach(function(e) {
+		ctxMono.fillText(e.text, e.x, e.y);
+	});
 
 	codeBox1.value = codeBox2.value = '';
 	codeBox1.disabled = true;
@@ -124,7 +244,7 @@ window.addEventListener('DOMContentLoaded', function() {
 	}, false);
 
 	img.addEventListener('error', function(evt) {
-		alert('Error: The image seems invalid, or is from an external domain which doesn\'t allow cross-origin resource sharing.');
+		alert(GetMsg('img_load_error'));
 	}, false);
 
 	function allowDrag(evt) {
@@ -201,31 +321,16 @@ window.addEventListener('DOMContentLoaded', function() {
 					document.getElementById('save_infos').style.visibility = 'hidden';
 					document.getElementById('form_save_select').reset();
 					saveLoaded = false;
-					alert('Error: This is not a valid NDS Pokémon save file!');
+					alert(GetMsg('save_error'));
 					return;
 				}
 				saveLoaded = true;
 				document.getElementById('save_infos').style.visibility = 'visible';
-				document.getElementById('save_version_value').innerHTML = Versions.ToString(save.version);
-				document.getElementById('save_size_value').innerHTML = save.is256kB ? '256&nbsp;kB (2&nbsp;Mb)' : '512&nbsp;kB (4&nbsp;Mb)';
+				document.getElementById('save_version_value').innerHTML = GetMsg('version_names')[save.version];
+				document.getElementById('save_size_value').innerHTML = save.is256kB ? '256&nbsp;' + GetMsg('kB') + '(2&nbsp;Mb)' : '512&nbsp;' + GetMsg('kB') + ' (4&nbsp;Mb)';
 				document.getElementById('save_format_value').innerHTML = Formats.ToString(save.format);
-				switch (save.status) {
-					case Statuses.good:
-						document.getElementById('save_status_value').innerHTML = '<span style="color: green;">Good</span>';
-						break;
-
-					case Statuses.corrupt:
-						document.getElementById('save_status_value').innerHTML = '<span style="color: darkred;">Corrupt</span>';
-						break;
-
-					case Statuses.fallbackToBlock1:
-						document.getElementById('save_status_value').innerHTML = '<span style="color: orangered;">Using block 1 (block 2 is corrupt)</span>';
-						break;
-
-					case Statuses.fallbackToBlock2:
-						document.getElementById('save_status_value').innerHTML = '<span style="color: orangered;">Using block 2 (block 1 is corrupt)</span>';
-						break;
-				}
+				
+				document.getElementById('save_status_value').innerHTML = '<span style="color: ' + Statuses.GetColor(save.status) + ';">' + GetMsg('status_names')[save.status] + '</span>';
 
 				var imgd = ctxSave.createImageData(192, 64);
 				var pixMap = imgd.data;
@@ -302,14 +407,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	function updateVersion(evt) {
 		if (evt.target.checked) {
-			codeVersion = typeof Versions[evt.target.value] === 'number' ? Versions[evt.target.value] : (document.getElementById('bw').checked = true && Versions.bw);
+			codeVersion = typeof Versions[evt.target.value] === 'number' ? Versions[evt.target.value] : ((document.getElementById('b2w2_code').checked = true) && Versions.b2w2);
 			refreshCode();
 		}
 	}
 
 	function updateLang(evt) {
 		if (evt.target.checked) {
-			lang = typeof Langs[evt.target.value] === 'number' ? Langs[evt.target.value] : (document.getElementById('fr').checked = true && Langs.fr);
+			codeLang = typeof Langs[evt.target.value] === 'number' ? Langs[evt.target.value] : ((document.getElementById(userLang + '_code').checked = true) && Langs[userLang]);
 			refreshCode();
 		}
 	}
@@ -364,7 +469,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			code2 = '',
 			addr1,
 			addr2,
-			pointer = ((codeVersion === Versions.bw || codeVersion === Versions.b2w2) ? 'B2000024' : pointers[codeVersion][lang]) + ' 00000000\n';
+			pointer = ((codeVersion === Versions.bw || codeVersion === Versions.b2w2) ? 'B2000024' : pointers[codeVersion][codeLang]) + ' 00000000\n';
 
 		switch (codeVersion) {
 			case Versions.dp:
@@ -457,8 +562,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			refreshCode();
 		}
 		catch (ex) {
-			alert('Error: The image is probably from an external domain which doesn\'t allow cross-origin resource sharing, therefore the browser doesn\'t allow reading it\'s data for security reasons.\n\nPlease reload this page (F5) and try again with another image.\n\nError was: ' + ex.message);
-			throw ex;
+			alert(GetMsg('img_process_error') + ex.message);
 		}
 	}
 
@@ -508,9 +612,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
 	document.getElementById('btn_download_save').addEventListener('click', function(evt) {
 		if (!saveLoaded)
-			alert('No save file loaded!');
+			alert(GetMsg('no_save_loaded'));
 		else if (!imgMonoLoaded)
-			alert('There is no monochromatic image loaded!\nPlease load an image first.');
+			alert(GetMsg('no_mono_image'));
 		else {
 			save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data);
 			var blob = new Blob([save.rawSaveBuffer], {type: 'application/octet-stream'});
