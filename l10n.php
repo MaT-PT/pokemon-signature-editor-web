@@ -65,6 +65,10 @@ Entrez chaque partie comme un code distinct.'
     'en' => 'Trigger buttons',
     'fr' => 'Activateurs'
   ],
+  'reset' => [
+    'en' => 'Reset',
+    'fr' => 'R&eacute;initialiser'
+  ],
   'drop_save' => [
     'en' => 'Drop a save file here',
     'fr' => 'D&eacute;posez une sauvegarde ici'

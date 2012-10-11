@@ -65,11 +65,6 @@ function Dec2Hex(n) {
 	return n.toString(16).toUpperCase();
 }
 
-function Bin2Hex(bin) {
-	var dec = parseInt(bin, 2);
-	return (dec < 16 ? '0' : '') + Dec2Hex(dec).toUpperCase();
-}
-
 window.addEventListener('DOMContentLoaded', function() {
 	var canvas = document.getElementById('sign'),
 		canvasMono = document.getElementById('sign_mono'),

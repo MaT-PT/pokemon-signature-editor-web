@@ -185,7 +185,7 @@ var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s)
           </tr>
         </tbody>
       </table>
-      <input type="reset" id="reset_checkboxes" value="Reset" />
+      <input type="reset" id="reset_checkboxes" value="<?php show_msg('reset'); ?>" />
     </details>
   </section>
   <section id="save_wrapper">
