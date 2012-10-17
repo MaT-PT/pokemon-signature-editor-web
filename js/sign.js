@@ -68,109 +68,201 @@ function Dec2Hex(n) {
 
 // Localization
 var msgs = {
-	canvas_text: {
-		en: [{
-				text: 'Drop a 192×64 px image here',
+		canvas_text: {
+			en: [{
+					text: 'Drop a 192×64 px image here',
+					x: 25,
+					y: 25
+				},
+				{
+					text: '- or -',
+					x: 85,
+					y: 35
+				},
+				{
+					text: 'select one below',
+					x: 56,
+					y: 45
+				},
+			],
+			fr: [{
+					text: 'Déposez une image de 192×64 px ici',
+					x: 8,
+					y: 25
+				},
+				{
+					text: '- ou -',
+					x: 84,
+					y: 35
+				},
+				{
+					text: 'sélectionnez-en une ci-dessous',
+					x: 23,
+					y: 45
+				},
+			]
+		},
+		canvas_mono_text: {
+			en: [{
+					text: 'This will be the final signature',
+					x: 20,
+					y: 35
+				}],
+			fr: [{
+					text: 'Ceci sera la signature finale.',
+					x: 29,
+					y: 35
+				}]
+		},
+		version_names: {
+			en: {
+				0: 'Diamond/Pearl',
+				1: 'Platinum',
+				2: 'HeartGold/SoulSilver',
+				3: 'Black/White',
+				4: 'Black 2/White 2',
+				0xff: 'Unknown'
+			},
+			fr: {
+				0: 'Diamant/Perle',
+				1: 'Platine',
+				2: 'HeartGold/SoulSilver',
+				3: 'Noir/Blanc',
+				4: 'Noir 2/Blanc 2',
+				0xff: 'Inconnu'
+			}
+		},
+		status_names: {
+			en: {
+				0: 'Good',
+				1: 'Corrupt',
+				2: 'Using block 1 (block 2 is corrupt)',
+				3: 'Using block 2 (block 1 is corrupt)'
+			},
+			fr: {
+				0: 'Bon',
+				1: 'Corrompu',
+				2: 'Utilisation du bloc 1 (bloc 2 corrompu)',
+				3: 'Utilisation du bloc 2 (bloc 1 corrompu)'
+			}
+		},
+		img_load_error: {
+			en: 'Error: The image seems invalid, or is from an external domain which doesn\'t allow cross-origin resource sharing.',
+			fr: 'Erreur : L\'image semble invalide, ou alors elle provient d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing".'
+		},
+		save_error: {
+			en: 'Error: This is not a valid NDS Pokémon save file!',
+			fr: 'Erreur : Ce n\'est pas une sauvegarde de Pokémon sur NDS valide !'
+		},
+		img_process_error: {
+			en: 'Error: The image is probably from an external domain which doesn\'t allow cross-origin resource sharing, therefore the browser doesn\'t allow reading it\'s data for security reasons.\n\nPlease reload this page (F5) and try again with another image.\n\nError was: ',
+			fr: 'Erreur : L\'image est probablement d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing", donc le navigateur empêche la lecture de ses données pour des raisons de sécurité.\n\nVeuillez rafraîchir cette page (F5) et réessayer avec une autre image.\n\nL\'erreur était : '
+		},
+		no_save_loaded: {
+			en: 'No save file loaded!',
+			fr: 'Aucun fichier de sauvegarde n\'a été chargé !'
+		},
+		no_mono_image: {
+			en: 'No image loaded!\nPlease select an image in the top left-hand corner.',
+			fr: 'Aucune image n\'a été chargée !\nVeuillez sélectionner une image en haut à gauche.'
+		},
+		kB: {
+			en: 'kB',
+			fr: 'ko'
+		},
+	},
+	tCardData = {
+		dp_pt: {
+			textColor: {
+				r: 0x70,
+				g: 0x70,
+				b: 0x70
+			},
+			origin: {
 				x: 25,
-				y: 25
+				y: 6
 			},
-			{
-				text: '- or -',
-				x: 85,
-				y: 35
-			},
-			{
-				text: 'select one below',
-				x: 56,
-				y: 45
-			},
-		],
-		fr: [{
-				text: 'Déposez une image de 192×64 px ici',
-				x: 8,
-				y: 25
-			},
-			{
-				text: '- ou -',
-				x: 84,
-				y: 35
-			},
-			{
-				text: 'sélectionnez-en une ci-dessous',
-				x: 23,
-				y: 45
-			},
-		]
-	},
-	canvas_mono_text: {
-		en: [{
-				text: 'This will be the final signature',
-				x: 20,
-				y: 35
-			}],
-		fr: [{
-				text: 'Ceci sera la signature finale.',
-				x: 29,
-				y: 35
-			}]
-	},
-	version_names: {
-		en: {
-			0: 'Diamond/Pearl',
-			1: 'Platinum',
-			2: 'HeartGold/SoulSilver',
-			3: 'Black/White',
-			4: 'Black 2/White 2',
-			0xff: 'Unknown'
+			size: {
+				w: 242,
+				h: 79
+			}
 		},
-		fr: {
-			0: 'Diamant/Perle',
-			1: 'Platine',
-			2: 'HeartGold/SoulSilver',
-			3: 'Noir/Blanc',
-			4: 'Noir 2/Blanc 2',
-			0xff: 'Inconnu'
-		}
-	},
-	status_names: {
-		en: {
-			0: 'Good',
-			1: 'Corrupt',
-			2: 'Using block 1 (block 2 is corrupt)',
-			3: 'Using block 2 (block 1 is corrupt)'
+		hgss: {
+			textColor: {
+				r: 0x48,
+				g: 0x60,
+				b: 0x98
+			},
+			origin: {
+				x: 30,
+				y: 1
+			},
+			size: {
+				w: 252,
+				h: 71
+			}
 		},
-		fr: {
-			0: 'Bon',
-			1: 'Corrompu',
-			2: 'Utilisation du bloc 1 (bloc 2 corrompu)',
-			3: 'Utilisation du bloc 2 (bloc 1 corrompu)'
+		bw: {
+			textColor: {
+				r: 0x30,
+				g: 0x30,
+				b: 0x30
+			},
+			origin: {
+				x: 32,
+				y: 4
+			},
+			size: {
+				w: 256,
+				h: 84
+			}
+		},
+		bw_half: {
+			textColor: {
+				r: 0x30,
+				g: 0x30,
+				b: 0x30
+			},
+			origin: {
+				x: 80,
+				y: 4
+			},
+			size: {
+				w: 256,
+				h: 84
+			}
+		},
+		b2w2: {
+			textColor: {
+				r: 0x30,
+				g: 0x30,
+				b: 0x30
+			},
+			origin: {
+				x: 28,
+				y: 8
+			},
+			size: {
+				w: 248,
+				h: 88
+			}
+		},
+		b2w2_half: {
+			textColor: {
+				r: 0x30,
+				g: 0x30,
+				b: 0x30
+			},
+			origin: {
+				x: 76,
+				y: 8
+			},
+			size: {
+				w: 248,
+				h: 88
+			}
 		}
-	},
-	img_load_error: {
-		en: 'Error: The image seems invalid, or is from an external domain which doesn\'t allow cross-origin resource sharing.',
-		fr: 'Erreur : L\'image semble invalide, ou alors elle provient d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing".'
-	},
-	save_error: {
-		en: 'Error: This is not a valid NDS Pokémon save file!',
-		fr: 'Erreur : Ce n\'est pas une sauvegarde de Pokémon sur NDS valide !'
-	},
-	img_process_error: {
-		en: 'Error: The image is probably from an external domain which doesn\'t allow cross-origin resource sharing, therefore the browser doesn\'t allow reading it\'s data for security reasons.\n\nPlease reload this page (F5) and try again with another image.\n\nError was: ',
-		fr: 'Erreur : L\'image est probablement d\'un domaine externe qui n\'autorise pas le "Cross-origin resource sharing", donc le navigateur empêche la lecture de ses données pour des raisons de sécurité.\n\nVeuillez rafraîchir cette page (F5) et réessayer avec une autre image.\n\nL\'erreur était : '
-	},
-	no_save_loaded: {
-		en: 'No save file loaded!',
-		fr: 'Aucun fichier de sauvegarde n\'a été chargé !'
-	},
-	no_mono_image: {
-		en: 'No image loaded!\nPlease select an image in the top left-hand corner.',
-		fr: 'Aucune image n\'a été chargée !\nVeuillez sélectionner une image en haut à gauche.'
-	},
-	kB: {
-		en: 'kB',
-		fr: 'ko'
-	},
-};
+	};
 
 function GetMsg(name) {
 	if (typeof msgs[name] === 'undefined')
@@ -187,9 +279,11 @@ window.addEventListener('DOMContentLoaded', function() {
 	var canvas = document.getElementById('sign'),
 		canvasMono = document.getElementById('sign_mono'),
 		canvasSave = document.getElementById('sign_save'),
+		canvasPrev = document.getElementById('sign_preview_canvas'),
 		ctx = canvas.getContext('2d'),
 		ctxMono = canvasMono.getContext('2d'),
 		ctxSave = canvasSave.getContext('2d'),
+		ctxPrev = canvasPrev.getContext('2d'),
 		img = document.createElement('IMG'),
 		imageSelect = document.getElementById('image_select'),
 		saveSelect = document.getElementById('save_select'),
@@ -401,14 +495,15 @@ window.addEventListener('DOMContentLoaded', function() {
 			if (keysXY[k].checked)
 				trigXY &= NDSKeys[keysXY[k].value];
 
-		return   ((trig == 0xffff) ? '' : '94000130 ' + Dec2Hex(trig) + '0000\n') +
-			   ((trigXY == 0xffff) ? '' : '94000136 ' + Dec2Hex(trigXY) + '0000\n');
+		return ((trig == 0xffff) ? '' : '94000130 ' + Dec2Hex(trig) + '0000\n') +
+			 ((trigXY == 0xffff) ? '' : '94000136 ' + Dec2Hex(trigXY) + '0000\n');
 	}
 
 	function updateVersion(evt) {
 		if (evt.target.checked) {
 			codeVersion = typeof Versions[evt.target.value] === 'number' ? Versions[evt.target.value] : ((document.getElementById('b2w2_code').checked = true) && Versions.b2w2);
 			refreshCode();
+			generatePreview();
 		}
 	}
 
@@ -548,9 +643,10 @@ window.addEventListener('DOMContentLoaded', function() {
 		if (!imgLoaded)
 			return;
 		try {
-			var imgd = ctx.getImageData(0, 0, canvas.width, canvas.height),
+			var imgd = ctx.getImageData(0, 0, 192, 64),
 				pixMap = imgd.data,
 				threshold = Math.round(document.getElementById('threshold').value * 100) / 100;
+
 			for (var i = 0, l = pixMap.length; i < l; i += 4)
 				pixMap[i] = pixMap[i+1] = pixMap[i+2] = (GetBrightness(pixMap[i], pixMap[i+1], pixMap[i+2]) >= threshold ? 255 : 0);
 			ctxMono.putImageData(imgd, 0, 0);
@@ -560,10 +656,74 @@ window.addEventListener('DOMContentLoaded', function() {
 			imgMonoLoaded = true;
 
 			refreshCode();
+			generatePreview();
 		}
 		catch (ex) {
 			alert(GetMsg('img_process_error') + ex.message);
 		}
+	}
+
+	function generatePreview() {
+		if (!imgMonoLoaded)
+			return;
+
+		var pixMapMono = ctxMono.getImageData(0, 0, 192, 64).data,
+			imgUrl = 'TC_',
+			imgPrev = new Image(),
+			tcData, nbStars;
+
+		nbStars = 0;
+
+		switch (codeVersion) {
+			case Versions.dp:
+			case Versions.plat:
+				tcData = tCardData.dp_pt;
+				imgUrl += 'DPPt_' + nbStars + 's';
+				break;
+
+			case Versions.hgss:
+				tcData = tCardData.hgss;
+				imgUrl += 'HGSS_' + nbStars + 's';
+				break;
+
+			case Versions.bw:
+				tcData = tCardData.bw;
+				imgUrl += 'White_' + nbStars + 's';
+				break;
+
+			case Versions.b2w2:
+			default:
+				tcData = tCardData.b2w2;
+				imgUrl += 'Black2_' + nbStars + 's';
+				break;				
+		}
+		imgUrl += '.png';
+
+		imgPrev.addEventListener('load', function(evt) {
+			canvasPrev.width = tcData.size.w;
+			canvasPrev.height = tcData.size.h;
+			ctxPrev.drawImage(evt.target, 0, 0);
+			var imgdPrev = ctxPrev.getImageData(tcData.origin.x, tcData.origin.y, 192, 64),
+				pixMapPrev = imgdPrev.data;
+
+			for (var i = 0, l = pixMapPrev.length; i < l; i += 4) {
+				if (pixMapMono[i] === 0) {
+					pixMapPrev[ i ] = tcData.textColor.r;
+					pixMapPrev[i+1] = tcData.textColor.g;
+					pixMapPrev[i+2] = tcData.textColor.b;
+				}
+			}
+			ctxPrev.putImageData(imgdPrev, tcData.origin.x, tcData.origin.y);
+			
+			document.getElementById('sign_preview_wrapper').style.visibility = 'visible';
+		}, false);
+
+		/*imgPrev.addEventListener('error', function(evt) {
+			if (console)
+				console.log('Unable to load preview image: ' + evt.target.src);
+		}, false);*/
+
+		imgPrev.src = 'images/sign_preview/' + imgUrl;
 	}
 
 	imageSelect.addEventListener('change', function(evt) {
