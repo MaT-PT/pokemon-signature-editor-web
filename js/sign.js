@@ -1,7 +1,7 @@
 /**
 	TODO:
 	 - 'Real life' signature preview, with trainer card background and possibly animations.
-	 - Add some help withing the page.
+	 - Add some help within the page.
 **/
 
 String.prototype.toCharCode = function() {
@@ -788,7 +788,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		}
 	}, false);
 
-	document.getElementById('threshold').addEventListener('change', function(evt) {
+	document.getElementById('threshold').addEventListener('input', function(evt) {
 		document.getElementById('threshold_value').innerHTML = Math.round(this.value * 100) / 100;
 		makeMonoImage();
 	}, false);
