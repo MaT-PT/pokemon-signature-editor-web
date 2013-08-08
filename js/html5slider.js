@@ -1,8 +1,8 @@
 /*
-html5slider - a JS implementation of <input type=range> for Firefox 4 and up
+html5slider - a JS implementation of <input type=range> for Firefox 16 and up
 https://github.com/fryn/html5slider
 
-Copyright (c) 2010-2011 Frank Yan, <http://frankyan.com>
+Copyright (c) 2010-2013 Frank Yan, <http://frankyan.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,8 @@ try {
 }
 
 // test for required property support
-if (!document.mozSetImageElement || !('MozAppearance' in test.style))
+test.style.background = 'linear-gradient(red, red)';
+if (!test.style.backgroundImage || !('MozAppearance' in test.style))
   return;
 
 var scale;
@@ -46,8 +47,8 @@ var thumb = {
   width: isMac ? 22 : 12,
   height: isMac ? 16 : 20
 };
-var track = '-moz-linear-gradient(top, transparent ' + (isMac ?
-  '6px, #999 6px, #999 7px, #ccc 9px, #bbb 11px, #bbb 12px, transparent 12px' :
+var track = 'linear-gradient(transparent ' + (isMac ?
+  '6px, #999 6px, #999 7px, #ccc 8px, #bbb 9px, #bbb 10px, transparent 10px' :
   '9px, #999 9px, #bbb 10px, #fff 11px, transparent 11px') +
   ', transparent)';
 var styles = {
@@ -60,6 +61,12 @@ var styles = {
   cursor: 'default',
   'text-indent': '-999999px' // -moz-user-select: none; breaks mouse capture
 };
+var options = {
+  attributes: true,
+  attributeFilter: ['min', 'max', 'step', 'value']
+};
+var onInput = document.createEvent('HTMLEvents');
+onInput.initEvent('input', true, false);
 var onChange = document.createEvent('HTMLEvents');
 onChange.initEvent('change', true, false);
 
@@ -67,31 +74,39 @@ if (document.readyState == 'loading')
   document.addEventListener('DOMContentLoaded', initialize, true);
 else
   initialize();
+addEventListener('pageshow', recreate, true);
 
 function initialize() {
   // create initial sliders
-  Array.forEach(document.querySelectorAll('input[type=range]'), transform);
+  recreate();
   // create sliders on-the-fly
-  document.addEventListener('DOMNodeInserted', onNodeInserted, true);
+  new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.addedNodes)
+        Array.forEach(mutation.addedNodes, function(node) {
+          if (!(node instanceof Element))
+            ;
+          else if (node.childElementCount)
+            Array.forEach(node.querySelectorAll('input[type=range]'), check);
+          else if (node.mozMatchesSelector('input[type=range]'))
+            check(node);
+        });
+    });
+  }).observe(document, { childList: true, subtree: true });
 }
 
-function onNodeInserted(e) {
-  check(e.target);
-  if (e.target.querySelectorAll)
-    Array.forEach(e.target.querySelectorAll('input'), check);
+function recreate() {
+  Array.forEach(document.querySelectorAll('input[type=range]'), check);
 }
 
-function check(input, async) {
-  if (input.localName != 'input' || input.type == 'range');
-  else if (input.getAttribute('type') == 'range')
+function check(input) {
+  if (input.type != 'range')
     transform(input);
-  else if (!async)
-    setTimeout(check, 0, input, true);
 }
 
 function transform(slider) {
 
-  var isValueSet, areAttrsSet, isChanged, isClick, prevValue, rawValue, prevX;
+  var isValueSet, areAttrsSet, isUI, isClick, prevValue, rawValue, prevX;
   var min, max, step, range, value = slider.value;
 
   // lazily create shared slider affordance
@@ -121,17 +136,23 @@ function transform(slider) {
   };
   slider.__defineGetter__('value', getValue);
   slider.__defineSetter__('value', setValue);
-  slider.__defineGetter__('type', function() { return 'range'; });
+  Object.defineProperty(slider, 'type', {
+    get: function() { return 'range'; }
+  });
 
   // sync properties with attributes
-  ['min', 'max', 'step'].forEach(function(prop) {
-    if (slider.hasAttribute(prop))
+  ['min', 'max', 'step'].forEach(function(name) {
+    if (slider.hasAttribute(name))
       areAttrsSet = true;
-    slider.__defineGetter__(prop, function() {
-      return this.hasAttribute(prop) ? this.getAttribute(prop) : '';
-    });
-    slider.__defineSetter__(prop, function(val) {
-      val === null ? this.removeAttribute(prop) : this.setAttribute(prop, val);
+    Object.defineProperty(slider, name, {
+      get: function() {
+        return this.hasAttribute(name) ? this.getAttribute(name) : '';
+      },
+      set: function(val) {
+        val === null ?
+          this.removeAttribute(name) :
+          this.setAttribute(name, val);
+      }
     });
   });
 
@@ -140,17 +161,19 @@ function transform(slider) {
   style(slider, styles);
   update();
 
-  slider.addEventListener('DOMAttrModified', function(e) {
-    // note that value attribute only sets initial value
-    if (e.attrName == 'value' && !isValueSet) {
-      value = e.newValue;
-      draw();
-    }
-    else if (~['min', 'max', 'step'].indexOf(e.attrName)) {
-      update();
-      areAttrsSet = true;
-    }
-  }, true);
+  new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName != 'value') {
+        update();
+        areAttrsSet = true;
+      }
+      // note that value attribute only sets initial value
+      else if (!isValueSet) {
+        value = slider.getAttribute('value');
+        draw();
+      }
+    });
+  }).observe(slider, options);
 
   slider.addEventListener('mousedown', onDragStart, true);
   slider.addEventListener('keydown', onKeyDown, true);
@@ -162,7 +185,7 @@ function transform(slider) {
     setTimeout(function() { isClick = false; }, 0);
     if (e.button || !range)
       return;
-    var width = parseFloat(getComputedStyle(this, 0).width);
+    var width = parseFloat(getComputedStyle(this).width);
     var multiplier = (width - thumb.width) / range;
     if (!multiplier)
       return;
@@ -171,7 +194,7 @@ function transform(slider) {
               (value - min) * multiplier;
     // if click was not on thumb, move thumb to click location
     if (Math.abs(dev) > thumb.radius) {
-      isChanged = true;
+      isUI = true;
       this.value -= -dev / multiplier;
     }
     rawValue = value;
@@ -181,25 +204,27 @@ function transform(slider) {
   }
 
   function onDrag(e) {
-    var width = parseFloat(getComputedStyle(this, 0).width);
+    var width = parseFloat(getComputedStyle(this).width);
     var multiplier = (width - thumb.width) / range;
     if (!multiplier)
       return;
     rawValue += (e.clientX - prevX) / multiplier;
     prevX = e.clientX;
-    isChanged = true;
+    isUI = true;
     this.value = rawValue;
   }
 
   function onDragEnd() {
     this.removeEventListener('mousemove', onDrag, true);
     this.removeEventListener('mouseup', onDragEnd, true);
+    slider.dispatchEvent(onInput);
+    slider.dispatchEvent(onChange);
   }
 
   function onKeyDown(e) {
     if (e.keyCode > 32 && e.keyCode < 41) {	// 33-40: PgUp, PgDn, End, Home, Left, Up, Right, Down
       onFocus.call(this);
-      isChanged = true;
+      isUI = true;
       switch (e.keyCode) {
         case 33:	// PageUp
           this.value = value + 10 * step;
@@ -233,7 +258,7 @@ function transform(slider) {
   function onFocus() {
     if (!isClick)
       this.style.boxShadow = !isMac ? '0 0 0 2px #fb0' :
-        '0 0 2px 1px -moz-mac-focusring, inset 0 0 1px -moz-mac-focusring';
+        'inset 0 0 20px rgba(0,127,255,.1), 0 0 1px rgba(0,127,255,.4)';
   }
 
   function onBlur() {
@@ -273,9 +298,10 @@ function transform(slider) {
   // renders slider using CSS background ;)
   function draw(attrsModified) {
     calc();
-    if (isChanged && value != prevValue)
-      slider.dispatchEvent(onChange);
-    isChanged = false;
+    var wasUI = isUI;
+    isUI = false;
+    if (wasUI && value != prevValue)
+      slider.dispatchEvent(onInput);
     if (!attrsModified && value == prevValue)
       return;
     prevValue = value;
