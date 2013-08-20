@@ -60,13 +60,15 @@ img {
 #form_image_select {
 	margin-top: 1em;
 }
+#sign_preview_params {
+	display: table-row;
+}
 #sign_preview_wrapper {
 	float: left;
 	display: table;
 	visibility: hidden;
 	margin-bottom: 1em;
 	padding: .8em;
-	height: 88px;
 	border: 1px dashed lightgreen;
 }
 #sign_preview_middle {
@@ -74,6 +76,7 @@ img {
 	white-space: nowrap;
 	vertical-align: middle;
 	font-size: 1.2em;
+	height: 88px;
 }
 #sign_preview_canvas {
 	background-color: transparent;
@@ -239,8 +242,33 @@ table caption {
 }
 
 .no-details details > summary:before {
-	color: #6666FF;
+	color: #6666ff;
 }
 details > summary::-webkit-details-marker {
-	color: #6666FF;
+	color: #6666ff;
+}
+
+#animate {
+    display: none;
+}
+#animate + label {
+    line-height: 20px;
+}
+#animate + label:before {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: .5em;
+    float: left;
+    content: "";
+    background: url("images/sign_preview/Animate_buttons.png") no-repeat 0 0;
+}
+#animate + label:active:before {
+    background-position: 0 -20px;
+}
+#animate:checked + label:before {
+    background-position: 0 -40px;
+}
+#animate:checked + label:active:before {
+    background-position: 0 -60px;
 }

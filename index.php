@@ -64,6 +64,11 @@ var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s)
       <?php show_msg('sign_preview'); ?> 
       <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
     </div>
+    <div id="sign_preview_params">
+      <div id="sign_preview_animate">
+        <input id="animate" type="checkbox" /><label for="animate"><?php show_msg('animate'); ?></label>
+      </div>
+    </div>
   </section>
   <section id="code_wrapper">
     <fieldset id="version_code">

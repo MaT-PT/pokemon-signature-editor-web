@@ -61,6 +61,10 @@ Entrez chaque partie comme un code distinct.'
     'en' => 'Split code',
     'fr' => 'Couper le code en deux'
   ],
+  'animate' => [
+    'en' => 'Animate',
+    'fr' => 'Animer'
+  ],
   'triggers' => [
     'en' => 'Trigger buttons',
     'fr' => 'Activateurs'

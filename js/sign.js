@@ -1,6 +1,7 @@
 /**
 	TODO:
-	 - 'Real life' signature preview, with trainer card background and possibly animations.
+	 - Support different number of stars and differentiate Black/White.
+	 - Get all the Trainer Card backgrounds (B2/W2).
 	 - Add some help within the page.
 **/
 
@@ -88,6 +89,9 @@ window.addEventListener('DOMContentLoaded', function() {
 		codeTrigger = GetTrigger(),
 		checkBoxes = document.querySelectorAll('#table_code_trigger input[type="checkbox"]'),
 		splitCode = document.getElementById('split_code').checked,
+		animateWrapper = document.getElementById('sign_preview_animate'),
+		animateCb = document.getElementById('animate'),
+		lastTimeout = -1,
 		codeBox1 = document.getElementById('code_box1'),
 		codeBox2 = document.getElementById('code_box2');
 
@@ -214,7 +218,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				document.getElementById('save_version_value').innerHTML = GetMsg('version_names')[save.version];
 				document.getElementById('save_size_value').innerHTML = save.is256kB ? '256&nbsp;' + GetMsg('kB') + ' (2&nbsp;Mb)' : '512&nbsp;' + GetMsg('kB') + ' (4&nbsp;Mb)';
 				document.getElementById('save_format_value').innerHTML = Formats.ToString(save.format);
-				
+
 				document.getElementById('save_status_value').innerHTML = '<span style="color: ' + Statuses.GetColor(save.status) + ';">' + GetMsg('status_names')[save.status] + '</span>';
 
 				var imgd = ctxSave.createImageData(192, 64);
@@ -341,6 +345,10 @@ window.addEventListener('DOMContentLoaded', function() {
 		refreshCode();
 	}, false);
 
+	animateCb.addEventListener('change', function(evt) {
+		generatePreview();
+	}, false);
+
 	document.getElementById('reset_checkboxes').addEventListener('click', function(evt) {
 		for (var i = 0, l = checkBoxes.length; i < l; i++)
 			checkBoxes[i].checked = false;
@@ -353,38 +361,35 @@ window.addEventListener('DOMContentLoaded', function() {
 		var codeTemp = 0,
 			code1 = '',
 			code2 = '',
-			addr1,
-			addr2,
+			addr,
+			addrE,
 			pointer = ((codeVersion === Versions.bw || codeVersion === Versions.b2w2) ? 'B2000024' : pointers[codeVersion][codeLang]) + ' 00000000\n';
 
 		switch (codeVersion) {
 			case Versions.dp:
-				addr1 = 'E0005B70';
-				addr2 = 'E0005E70';
+				addr = 0x5b70;
 				pointer += 'B0000004 00000000\n';
 				break;
 
 			case Versions.plat:
-				addr1 = 'E0005BBC';
-				addr2 = 'E0005EBC';
+				addr = 0x5bbc;
 				break;
 
 			case Versions.hgss:
-				addr1 = 'E0004548';
-				addr2 = 'E0004848';
+				addr = 0x4548;
 				break;
 
 			case Versions.bw:
-				addr1 = 'E001C9BC';
-				addr2 = 'E001CCBC';
+				addr = 0x1c9bc;
 				break;		
 
 			case Versions.b2w2:
 			default:
-				addr1 = 'E001CA20';
-				addr2 = 'E001CD20';
+				addr = 0x1ca20;
 				break;				
 		}
+
+		addrE = 0xe0000000 + addr;
 
 		for (var cY = 0; cY <= 56; cY += 8) {
 			for (var cX = 0; cX <= 184; cX += 8) {
@@ -407,13 +412,15 @@ window.addEventListener('DOMContentLoaded', function() {
 				code1 += '\n';
 			}
 		}
+
 		code1 = code1.toUpperCase();
+
 		if (splitCode) {
-			code2 = codeTrigger + pointer + addr2 + ' 00000300\n' + code1.substring(1728) + 'D2000000 00000000';
-			code1 = codeTrigger + pointer + addr1 + ' 00000300\n' + code1.substr(0, 1728) + 'D2000000 00000000';			
+			code2 = codeTrigger + pointer + Dec2Hex(addrE + 0x300) + ' 00000300\n' + code1.substring(1728) + 'D2000000 00000000';
+			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000300\n' + code1.substr(0, 1728) + 'D2000000 00000000';			
 		}
 		else
-			code1 = codeTrigger + pointer + addr1 + ' 00000600\n' + code1 + 'D2000000 00000000';			
+			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000600\n' + code1 + 'D2000000 00000000';			
 
 		return [code1, code2];
 	}
@@ -454,13 +461,19 @@ window.addEventListener('DOMContentLoaded', function() {
 		}
 	}
 
-	function generatePreview() {
+	function generatePreview(secondFrame) {
 		if (!imgMonoLoaded)
 			return;
+
+		if (lastTimeout > 0)
+			window.clearTimeout(lastTimeout);
 
 		var pixMapMono = ctxMono.getImageData(0, 0, 192, 64).data,
 			imgUrl = 'TC_',
 			imgPrev = new Image(),
+			animate = animateCb.checked,
+			halfTxt = animate ? '_half' : '',
+			secondFrame = !!secondFrame,
 			tcData, nbStars;
 
 		nbStars = 0;
@@ -470,51 +483,67 @@ window.addEventListener('DOMContentLoaded', function() {
 			case Versions.plat:
 				tcData = tCardData.dp_pt;
 				imgUrl += 'DPPt_' + nbStars + 's';
+				animate = false;
+				animateWrapper.style.visibility = 'hidden';
 				break;
 
 			case Versions.hgss:
 				tcData = tCardData.hgss;
 				imgUrl += 'HGSS_' + nbStars + 's';
+				animate = false;
+				animateWrapper.style.visibility = 'hidden';
 				break;
 
 			case Versions.bw:
-				tcData = tCardData.bw;
-				imgUrl += 'White_' + nbStars + 's';
+				tcData = tCardData['bw' + halfTxt];
+				imgUrl += 'White_' + nbStars + 's' + halfTxt;
+				animateWrapper.style.visibility = 'visible';
 				break;
 
 			case Versions.b2w2:
 			default:
-				tcData = tCardData.b2w2;
-				imgUrl += 'Black2_' + nbStars + 's';
+				tcData = tCardData['b2w2' + halfTxt];
+				imgUrl += 'Black2_' + nbStars + 's' + halfTxt;
+				animateWrapper.style.visibility = 'visible';
 				break;				
 		}
 		imgUrl += '.png';
+
+		var origX = tcData.origin.x;
+		if (animate && secondFrame)
+			origX -= 96;
 
 		imgPrev.addEventListener('load', function(evt) {
 			canvasPrev.width = tcData.size.w;
 			canvasPrev.height = tcData.size.h;
 			ctxPrev.drawImage(evt.target, 0, 0);
-			var imgdPrev = ctxPrev.getImageData(tcData.origin.x, tcData.origin.y, 192, 64),
+			var imgdPrev = ctxPrev.getImageData(origX, tcData.origin.y, 192, 64),
 				pixMapPrev = imgdPrev.data;
 
 			for (var i = 0, l = pixMapPrev.length; i < l; i += 4) {
+				if (animate && (secondFrame === (i % 768 <= 380)))
+					i += 384;
+
 				if (pixMapMono[i] === 0) {
 					pixMapPrev[ i ] = tcData.textColor.r;
 					pixMapPrev[i+1] = tcData.textColor.g;
 					pixMapPrev[i+2] = tcData.textColor.b;
 				}
 			}
-			ctxPrev.putImageData(imgdPrev, tcData.origin.x, tcData.origin.y);
-			
+			ctxPrev.putImageData(imgdPrev, origX, tcData.origin.y);
+
 			document.getElementById('sign_preview_wrapper').style.visibility = 'visible';
 		}, false);
 
-		/*imgPrev.addEventListener('error', function(evt) {
-			if (console)
+		imgPrev.addEventListener('error', function(evt) {
+			if (console && console.log)
 				console.log('Unable to load preview image: ' + evt.target.src);
-		}, false);*/
+		}, false);
 
 		imgPrev.src = 'images/sign_preview/' + imgUrl;
+
+		if (animate)
+			lastTimeout = window.setTimeout(function() {generatePreview(!secondFrame);}, 345);
 	}
 
 	imageSelect.addEventListener('change', function(evt) {

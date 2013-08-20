@@ -1,5 +1,5 @@
 /**
-	Localization
+	Localization + Trainer Card data
 **/
 
 var msgs = {
@@ -153,11 +153,6 @@ var msgs = {
 			}
 		},
 		bw_half: {
-			textColor: {
-				r: 0x30,
-				g: 0x30,
-				b: 0x30
-			},
 			origin: {
 				x: 80,
 				y: 4
@@ -183,11 +178,6 @@ var msgs = {
 			}
 		},
 		b2w2_half: {
-			textColor: {
-				r: 0x30,
-				g: 0x30,
-				b: 0x30
-			},
 			origin: {
 				x: 76,
 				y: 8
@@ -198,6 +188,8 @@ var msgs = {
 			}
 		}
 	};
+tCardData.bw_half.textColor = tCardData.bw.textColor;
+tCardData.b2w2_half.textColor = tCardData.b2w2.textColor;
 
 function GetMsg(name) {
 	if (typeof msgs[name] === 'undefined')
