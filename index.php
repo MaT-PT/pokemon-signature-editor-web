@@ -31,6 +31,7 @@ require_once('l10n.php');
   defaultUserLang = '<?php echo $def_lang; ?>';
 </script>
 <script type="text/javascript" src="js/html5slider.js"></script>
+<script type="text/javascript" src="js/l10n.js"></script>
 <script type="text/javascript" src="js/savefile.js"></script>
 <script type="text/javascript" src="js/sign.js"></script>
 <script type="text/javascript" src="js/details.js"></script>

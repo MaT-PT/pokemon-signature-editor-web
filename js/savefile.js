@@ -20,19 +20,20 @@ var SaveFile = function(saveBuffer) {
 		ByteArraysEqual = this.constructor.ByteArraysEqual,
 		GetCheckSum = this.constructor.GetCheckSum;
 
-	var uInt32Arr = new Uint32Array(saveBuffer, 0, Math.floor(saveBuffer.byteLength / 4));
+	var dataView = new DataView(saveBuffer);
 
 	// Reference: http://wiki.desmume.org/index.php?title=No_gba_save_format
 
 	this.GetFormat = function() {
-		if (ByteArraysEqual(new Uint8Array(saveBuffer, 0, 0x20), 'NocashGbaBackupMediaSavDataFile'.toCharCode().concat(0x1a)) && uInt32Arr[0x40 / 4] === 0x4d415253) {
-			if (uInt32Arr[0x44 / 4] === 0)	// No$GBA Uncompressed
+		if (ByteArraysEqual(new Uint8Array(saveBuffer, 0, 0x20), 'NocashGbaBackupMediaSavDataFile'.toCharCode().concat(0x1a)) && dataView.getUint32(0x40, true) === 0x4d415253) {
+			var compMethod = dataView.getUint32(0x44, true);
+			if (compMethod === 0)	// No$GBA Uncompressed
 				return Formats.no$GbaUncompressed;
-			else if (uInt32Arr[0x44 / 4] === 1)	// No$GBA Compressed
+			else if (compMethod === 1)	// No$GBA Compressed
 				return Formats.no$GbaCompressed;
 		}
 		else if (ByteArraysEqual(new Uint8Array(saveBuffer, saveBuffer.byteLength - 0x10, 0x10), '|-DESMUME SAVE-|'.toCharCode()))
-				return Formats.dsv;
+			return Formats.dsv;
 
 		return Formats.raw;
 	};
@@ -50,11 +51,11 @@ var SaveFile = function(saveBuffer) {
 				break;
 
 			case Formats.no$GbaUncompressed:
-				return saveBuffer.slice(0x4c, uInt32Arr[0x48 / 4] + 0x4c);	// The header is 0x4C bytes long, and the size of the actual data is stored at offset 0x48.
+				return saveBuffer.slice(0x4c, dataView.getUint32(0x48, true) + 0x4c);	// The header is 0x4C bytes long, and the size of the actual data is stored at offset 0x48.
 				break;
 
 			case Formats.no$GbaCompressed:
-				var sizeUncomp = uInt32Arr[0x4c / 4],
+				var sizeUncomp = dataView.getUint32(0x4c, true),
 					srcBuff = new Uint8Array(saveBuffer),
 					dstBuff = new Uint8Array(sizeUncomp),
 					srcPos = 0x50,
@@ -89,14 +90,8 @@ var SaveFile = function(saveBuffer) {
 		return null;
 	};
 	this.rawSaveBuffer = this.GetRawSave();
-	var rawUint32Arr;
-	try {
-		rawUint32Arr = new Uint32Array(this.rawSaveBuffer);
-	}
-	catch (err) {	// If the file size is not a multiple of 4, assume it's not a valid save file.
-		this.version = Versions.unknown;
-		return false;
-	}
+
+	var rawDataView = new DataView(this.rawSaveBuffer);
 
 	this.is256kB = this.rawSaveBuffer.byteLength === 0x40000;
 
@@ -107,47 +102,47 @@ var SaveFile = function(saveBuffer) {
 			ver = Versions.unknown;
 
 		/* -- Diamond/Pearl -- */
-		if (rawUint32Arr[0x12dc / 4] === comp) {
+		if (rawDataView.getUint32(0x12dc, true) === comp) {
 			this.usableBlocks = UsableBlocks.block1;
 			ver = Versions.dp;
 		}
-		if (rawUint32Arr[(0x12dc + BlockOffsets.block2) / 4] === comp) {
+		if (rawDataView.getUint32(0x12dc + BlockOffsets.block2, true) === comp) {
 			this.usableBlocks |= UsableBlocks.block2;
 			return Versions.dp;
 		}
 		/* -- Platinum -- */
-		if (rawUint32Arr[0x1328 / 4] === comp) {
+		if (rawDataView.getUint32(0x1328, true) === comp) {
 			this.usableBlocks = UsableBlocks.block1;
 			ver = Versions.plat;
 		}
-		if (rawUint32Arr[(0x1328 + BlockOffsets.block2) / 4] === comp) {
+		if (rawDataView.getUint32(0x1328 + BlockOffsets.block2, true) === comp) {
 			this.usableBlocks |= UsableBlocks.block2;
 			return Versions.plat;
 		}
 		/* -- HeartGold/SoulSilver -- */
-		if (rawUint32Arr[0x12b8 / 4] === comp) {
+		if (rawDataView.getUint32(0x12b8, true) === comp) {
 			this.usableBlocks = UsableBlocks.block1;
 			ver = Versions.hgss;
 		}
-		if (rawUint32Arr[(0x12b8 + BlockOffsets.block2) / 4] === comp) {
+		if (rawDataView.getUint32(0x12b8 + BlockOffsets.block2, true) === comp) {
 			this.usableBlocks |= UsableBlocks.block2;
 			return Versions.hgss;
 		}
 		/* -- Black/White -- */
-		if (rawUint32Arr[0x21600 / 4] === comp) {
+		if (rawDataView.getUint32(0x21600, true) === comp) {
 			this.usableBlocks = UsableBlocks.block1;
 			ver = Versions.bw;
 		}
-		if (rawUint32Arr[(0x21600 + BlockOffsets.block2bw) / 4] === comp) {
+		if (rawDataView.getUint32(0x21600 + BlockOffsets.block2bw, true) === comp) {
 			this.usableBlocks |= UsableBlocks.block2;
 			return Versions.bw;
 		}
 		/* -- Black 2/White 2 -- */
-		if (rawUint32Arr[0x21400 / 4] === comp) {
+		if (rawDataView.getUint32(0x21400, true) === comp) {
 			this.usableBlocks = UsableBlocks.block1;
 			ver = Versions.b2w2;
 		}
-		if (rawUint32Arr[(0x21400 + BlockOffsets.block2b2w2) / 4] === comp) {
+		if (rawDataView.getUint32(0x21400 + BlockOffsets.block2b2w2, true) === comp) {
 			this.usableBlocks |= UsableBlocks.block2;
 			return Versions.b2w2;
 		}
@@ -206,8 +201,8 @@ var SaveFile = function(saveBuffer) {
 		if (this.usableBlocks === UsableBlocks.block2)
 			return BlockOffsets.block2;
 
-		var count1 = rawUint32Arr[this.offsetSavCnt / 4],
-			count2 = rawUint32Arr[(this.offsetSavCnt + block2Offset) / 4];
+		var count1 = rawDataView.getUint32(this.offsetSavCnt, true),
+			count2 = rawDataView.getUint32(this.offsetSavCnt + block2Offset, true);
 
 		if (count1 >= count2)
 			return BlockOffsets.block1;
@@ -221,11 +216,11 @@ var SaveFile = function(saveBuffer) {
 			var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
 
 			var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
-			var signBlockActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0];
-			var footerSignActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.signatureCheckSumOffset, 1)[0];
+			var signBlockActualCheckSum = rawDataView.getUint16(blockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, true);
+			var footerSignActualCheckSum = rawDataView.getUint16(blockOffset + footerData.signatureCheckSumOffset, true);
 
 			var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset + footerData.offset, footerData.size));
-			var footerActualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + footerData.checkSumOffset, 1)[0];
+			var footerActualCheckSum = rawDataView.getUint16(blockOffset + footerData.checkSumOffset, true);
 
 			return signBlockCheckSum === signBlockActualCheckSum &&
 				   signBlockCheckSum === footerSignActualCheckSum &&
@@ -233,7 +228,7 @@ var SaveFile = function(saveBuffer) {
 		}
 		else {
 			var checkSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, blockOffset, this.blockSize));
-			var actualCheckSum = new Uint16Array(this.rawSaveBuffer, blockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0];
+			var actualCheckSum = rawDataView.getUint16(blockOffset + this.blockSize + this.offsetChkSumFooter, true);
 			return checkSum === actualCheckSum;
 		}
 	};
@@ -260,15 +255,15 @@ var SaveFile = function(saveBuffer) {
 			var footerData = this.version === Versions.bw ? BWFooter : B2W2Footer;
 
 			var signBlockCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + OffsetsSign.bw_b2w2, footerData.signatureBlockSize));
-			new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, 1)[0] = signBlockCheckSum;
-			new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.signatureCheckSumOffset, 1)[0] = signBlockCheckSum;
+			rawDataView.setUint16(this.currentBlockOffset + OffsetsSign.bw_b2w2 + footerData.signatureBlockSize + 2, signBlockCheckSum, true);
+			rawDataView.setUint16(this.currentBlockOffset + footerData.signatureCheckSumOffset, signBlockCheckSum, true);
 
 			var footerCheckSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.offset, footerData.size));
-			new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + footerData.checkSumOffset, 1)[0] = footerCheckSum;
+			rawDataView.setUint16(this.currentBlockOffset + footerData.checkSumOffset, footerCheckSum, true);
 		}
 		else {
 			var checkSum = GetCheckSum(new Uint8Array(this.rawSaveBuffer, this.currentBlockOffset, this.blockSize));
-			new Uint16Array(this.rawSaveBuffer, this.currentBlockOffset + this.blockSize + this.offsetChkSumFooter, 1)[0] = checkSum;
+			rawDataView.setUint16(this.currentBlockOffset + this.blockSize + this.offsetChkSumFooter, checkSum, true);
 		}
 	};
 
@@ -319,9 +314,11 @@ SaveFile.ChkSumFooterOffsets = {dp_pt: 0x12, hgss_bw_b2w2: 0xe};
 SaveFile.ByteArraysEqual = function(a, b) {
 	if (a.length !== b.length)
 		return false;
+
 	for (var i = 0, l = a.length; i < l; i++)
 		if (a[i] !== b[i])
 			return false;
+
 	return true;
 };
 SaveFile.GetCheckSum = function(data) {
