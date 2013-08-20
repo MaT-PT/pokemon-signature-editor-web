@@ -102,7 +102,6 @@ fieldset > legend {
 #version_code, #lang_code {
 	border: 1px solid gray;
 	border-radius: .8em;
-	/*box-shadow: 5px 5px 5px rgba(0, 0, 0, .5);*/
 }
 #version_code, #lang_code {
 	float: left;
@@ -139,7 +138,6 @@ fieldset > legend {
 	border-collapse: collapse;
 	margin-top: .25em;
 	margin-bottom: .25em;
-	/*font-size: 75%;*/
 }
 #table_code_trigger input[type="checkbox"] {
 	margin: 3px 4px;
@@ -256,9 +254,9 @@ details > summary::-webkit-details-marker {
 }
 #animate + label:before {
     display: inline-block;
-    width: 20px;
-    height: 20px;
     margin-right: .5em;
+    height: 20px;
+    width: 20px;
     float: left;
     content: "";
     background: url("images/sign_preview/Animate_buttons.png") no-repeat 0 0;

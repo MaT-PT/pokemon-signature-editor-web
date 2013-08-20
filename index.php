@@ -228,9 +228,9 @@ var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s)
 </div>
 <div id="right">
   <aside id="affiliate">
-    <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank"><img src="images/download_firefox.png" alt="Download Firefox" title="<?php show_msg('download_firefox_title'); ?>" /></a>
+    <a href="//affiliates.mozilla.org/link/banner/19565" target="_blank"><img src="images/<?php show_msg('download_firefox_img'); ?>.png" alt="Download Firefox" title="<?php show_msg('download_firefox_title'); ?>" /></a>
     <br />
-    <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank"><img src="images/download_aurora.png" alt="Download Aurora" title="<?php show_msg('download_aurora_title'); ?>" /></a>
+    <a href="//affiliates.mozilla.org/link/banner/20350" target="_blank"><img src="images/<?php show_msg('download_aurora_img'); ?>.png" alt="Download Aurora" title="<?php show_msg('download_aurora_title'); ?>" /></a>
     <br />
   </aside>
   <nav id="languages">

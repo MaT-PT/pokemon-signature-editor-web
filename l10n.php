@@ -131,6 +131,14 @@ Vous pouvez aussi double-cliquer dessus.'
     'en' => 'Give Firefox Aurora a try! Experiment new features and get better support of HTML5 technology.',
     'fr' => 'Essayez Firefox Aurora ! Expérimentez de nouvelles fonctionnalités avec un meilleur support de la technologie HTML5.'
   ],
+  'download_firefox_img' => [
+    'en' => 'download_firefox_en',
+    'fr' => 'download_firefox_fr'
+  ],
+  'download_aurora_img' => [
+    'en' => 'download_aurora_en',
+    'fr' => 'download_aurora_fr'
+  ],
 ];
 
 function get_msg($name) {
