@@ -105,6 +105,10 @@ var msgs = {
 			en: 'kB',
 			fr: 'ko'
 		},
+		feature_not_supported: {
+			en: 'Your browser doesn\'t support this feature.\n\nYou should consider using a proper browser such as Mozilla Firefox.',
+			fr: 'Votre navigateur ne supporte pas cette fonctionnalité.\n\nVous devriez essayer avec un navigateur récent tel que Mozilla Firefox.'
+		},
 	},
 	tCardData = {
 		dp_pt: {
