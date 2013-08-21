@@ -101,50 +101,54 @@ var SaveFile = function(saveBuffer) {
 		var comp = 0xbeefcafe,	// YES, they DID use the value 0xBEEFCAFE and it's a nice way to identify the game version from the save file.
 			ver = Versions.unknown;
 
-		/* -- Diamond/Pearl -- */
-		if (rawDataView.getUint32(0x12dc, true) === comp) {
-			this.usableBlocks = UsableBlocks.block1;
-			ver = Versions.dp;
+		try {
+			/* -- Diamond/Pearl -- */
+			if (rawDataView.getUint32(0x12dc, true) === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.dp;
+			}
+			if (rawDataView.getUint32(0x12dc + BlockOffsets.block2, true) === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.dp;
+			}
+			/* -- Platinum -- */
+			if (rawDataView.getUint32(0x1328, true) === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.plat;
+			}
+			if (rawDataView.getUint32(0x1328 + BlockOffsets.block2, true) === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.plat;
+			}
+			/* -- HeartGold/SoulSilver -- */
+			if (rawDataView.getUint32(0x12b8, true) === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.hgss;
+			}
+			if (rawDataView.getUint32(0x12b8 + BlockOffsets.block2, true) === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.hgss;
+			}
+			/* -- Black/White -- */
+			if (rawDataView.getUint32(0x21600, true) === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.bw;
+			}
+			if (rawDataView.getUint32(0x21600 + BlockOffsets.block2bw, true) === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.bw;
+			}
+			/* -- Black 2/White 2 -- */
+			if (rawDataView.getUint32(0x21400, true) === comp) {
+				this.usableBlocks = UsableBlocks.block1;
+				ver = Versions.b2w2;
+			}
+			if (rawDataView.getUint32(0x21400 + BlockOffsets.block2b2w2, true) === comp) {
+				this.usableBlocks |= UsableBlocks.block2;
+				return Versions.b2w2;
+			}
 		}
-		if (rawDataView.getUint32(0x12dc + BlockOffsets.block2, true) === comp) {
-			this.usableBlocks |= UsableBlocks.block2;
-			return Versions.dp;
-		}
-		/* -- Platinum -- */
-		if (rawDataView.getUint32(0x1328, true) === comp) {
-			this.usableBlocks = UsableBlocks.block1;
-			ver = Versions.plat;
-		}
-		if (rawDataView.getUint32(0x1328 + BlockOffsets.block2, true) === comp) {
-			this.usableBlocks |= UsableBlocks.block2;
-			return Versions.plat;
-		}
-		/* -- HeartGold/SoulSilver -- */
-		if (rawDataView.getUint32(0x12b8, true) === comp) {
-			this.usableBlocks = UsableBlocks.block1;
-			ver = Versions.hgss;
-		}
-		if (rawDataView.getUint32(0x12b8 + BlockOffsets.block2, true) === comp) {
-			this.usableBlocks |= UsableBlocks.block2;
-			return Versions.hgss;
-		}
-		/* -- Black/White -- */
-		if (rawDataView.getUint32(0x21600, true) === comp) {
-			this.usableBlocks = UsableBlocks.block1;
-			ver = Versions.bw;
-		}
-		if (rawDataView.getUint32(0x21600 + BlockOffsets.block2bw, true) === comp) {
-			this.usableBlocks |= UsableBlocks.block2;
-			return Versions.bw;
-		}
-		/* -- Black 2/White 2 -- */
-		if (rawDataView.getUint32(0x21400, true) === comp) {
-			this.usableBlocks = UsableBlocks.block1;
-			ver = Versions.b2w2;
-		}
-		if (rawDataView.getUint32(0x21400 + BlockOffsets.block2b2w2, true) === comp) {
-			this.usableBlocks |= UsableBlocks.block2;
-			return Versions.b2w2;
+		catch (ex) {
 		}
 
 		return ver;

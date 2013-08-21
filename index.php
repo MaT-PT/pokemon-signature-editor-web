@@ -18,6 +18,7 @@ require_once('l10n.php');
 <html lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1"/>
 <meta name="author" lang="en" content="M@T" />
 <meta name="description" lang="en" content="Pok&eacute;mon Signature Editor" />
 <meta name="keywords" lang="en" content="pok&eacute;mon, pokemon, signature, &eacute;diteur, editor, online, javascript, html5" />

@@ -13,7 +13,82 @@ String.prototype.toCharCode = function() {
 	return arr;
 };
 
-window.URL = window.URL || window.webkitURL;
+var saveFileAs;
+var Blob = window.Blob || window.WebKitBlob || window.MozBlob || window.MSBlob;
+var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder;
+var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+var winSaveAs = window.saveAs || window.webkitSaveAs || window.mozSaveAs || window.msSaveAs;
+var navSaveBlob = navigator.saveBlob || navigator.msSaveBlob || navigator.mozSaveBlob || navigator.webkitSaveBlob;
+var downloadInA = 'download' in document.createElement('a');
+var canMakeBlob = true;
+try {
+	new Blob([]);
+}
+catch (e) {
+	canMakeBlob = false;
+}
+
+function clickElement(elt){	
+	if (document.createEvent) {
+		var evt = document.createEvent('MouseEvents');
+		if (evt.initMouseEvent)
+			evt.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+		else
+			evt.initEvent('click', true, true);
+		elt.dispatchEvent(evt);
+	}
+	else if (document.createEventObject)
+		elt.fireEvent('onclick');
+	else
+		elt.click();
+}
+
+function makeBlob(data) {
+	if (canMakeBlob) {
+		return new Blob([data], {type: 'application/octet-stream'});
+	}
+	else {
+		var builder = new BlobBuilder();
+		builder.append(data);
+
+		return builder.getBlob('application/octet-stream');
+	}
+}
+
+if ((canMakeBlob || BlobBuilder) && (winSaveAs || navSaveBlob)) {
+	saveFileAs = function(data, name) {
+		var blob = makeBlob(data);
+
+		if (winSaveAs)
+			winSaveAs.call(window, blob, name);
+		else
+			navSaveBlob.call(navigator, blob, name);
+	};
+}
+else if ((canMakeBlob || BlobBuilder) && URL) {
+	saveFileAs = function(data, name) {
+		var blob = makeBlob(data, 'application/octet-stream'),
+			url = URL.createObjectURL(blob);
+
+		if (downloadInA) {
+			var a = document.createElement('A');
+			a.setAttribute('download', name);
+			a.setAttribute('href', url);
+			clickElement(a);
+		}
+		else
+			window.open(url, '_blank', '');
+
+		setTimeout(function() {
+			URL.revokeObjectURL(url);
+		}, 1000);
+	};
+}
+else {
+	saveFileAs = function() {
+		alert('Your browser doesn\'t support this feature.\n\nYou should consider using a proper browser such as Mozilla Firefox.');
+	};
+}
 
 if (!ArrayBuffer.prototype.slice)
 	ArrayBuffer.prototype.slice = function (begin, end) {
@@ -578,18 +653,6 @@ window.addEventListener('DOMContentLoaded', function() {
 		}
 	}, false);
 
-	function clickElement(elt){	
-		if (document.createEvent) {
-			var evt = document.createEvent('MouseEvents');
-			evt.initEvent('click', true, true);
-			elt.dispatchEvent(evt);
-		}
-		else if (document.createEventObject)
-			elt.fireEvent('onclick');
-		else
-			elt.click();
-	}
-
 	document.getElementById('btn_download_save').addEventListener('click', function(evt) {
 		if (!saveLoaded)
 			alert(GetMsg('no_save_loaded'));
@@ -597,14 +660,7 @@ window.addEventListener('DOMContentLoaded', function() {
 			alert(GetMsg('no_mono_image'));
 		else {
 			save.UpdateSignBytes(ctxMono.getImageData(0, 0, 192, 64).data);
-			var blob = new Blob([save.rawSaveBuffer], {type: 'application/octet-stream'});
-			var oUrl = window.URL.createObjectURL(blob);
-			//window.open(oUrl);
-			var a = document.createElement('A');
-			a.download = (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav';
-			a.href = oUrl;
-			clickElement(a);
-			setTimeout(function() {window.URL.revokeObjectURL(oUrl);}, 5000);	// Wait a few seconds before revoking the object URL.
+			saveFileAs(save.rawSaveBuffer, (/\.(sav|dsv)$/i.test(saveFileName) ? saveFileName.substr(0, saveFileName.length - 4) : saveFileName) + '_mod.sav');
 		}
 	}, false);
 
