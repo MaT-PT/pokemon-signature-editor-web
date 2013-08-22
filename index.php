@@ -2,14 +2,37 @@
 $IS_DEBUG = ($_SERVER['SERVER_NAME'] != 'pkm-sign-editor.olympe.in');
 
 $langs = ['fr', 'en', 'jp', 'es', 'it', 'de', 'ko'];
-$lang = $langs[0];
 $def_lang = $langs[1];
+$lang = $def_lang;
+$langOk = false;
 
 if (isset($_GET['lang'])) {
-  if (in_array(strtolower($_GET['lang']), $langs))
+  if (in_array(strtolower($_GET['lang']), $langs)) {
     $lang = strtolower($_GET['lang']);
-  else
-    $lang = $def_lang;
+    $langOk = true;
+  }
+}
+
+if (!$langOk) {
+  $acceptLangs = array();
+  if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+    preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+    if (count($lang_parse[1])) {
+      $acceptLangs = array_combine($lang_parse[1], $lang_parse[4]);
+      foreach ($acceptLangs as $lang => $val) {
+        if ($val === '')
+          $acceptLangs[$lang] = 1;
+      }
+      arsort($acceptLangs, SORT_NUMERIC);
+    }
+  }
+
+  foreach ($acceptLangs as $lng => $val) {
+    if (in_array($lng, $langs)) {
+      $lang = $lng;
+      break;
+    }
+  }
 }
 
 require_once('l10n.php');
@@ -49,6 +72,9 @@ var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(ga,s)
 <?php ob_flush(); flush(); ?>
 <body>
 <div id="wrapper">
+  <div style="background: url('images/insectod4.gif'); position: fixed; top: 400px; right: 20px; width: 56px; height: 50px" onclick="this.parentNode.removeChild(this);">
+    <!-- Looks like there’s a bug… -->
+  </div>
   <section id="image_wrapper">
     <canvas id="sign" width="192" height="64">[canvas]</canvas>
     <canvas id="sign_mono" width="192" height="64">[canvas]</canvas>

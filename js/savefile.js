@@ -107,7 +107,7 @@ var SaveFile = function(saveBuffer) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.dp;
 			}
-			if (rawDataView.getUint32(0x12dc + BlockOffsets.block2, true) === comp) {
+			if (!this.is256kB && rawDataView.getUint32(0x12dc + BlockOffsets.block2, true) === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.dp;
 			}
@@ -116,7 +116,7 @@ var SaveFile = function(saveBuffer) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.plat;
 			}
-			if (rawDataView.getUint32(0x1328 + BlockOffsets.block2, true) === comp) {
+			if (!this.is256kB && rawDataView.getUint32(0x1328 + BlockOffsets.block2, true) === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.plat;
 			}
@@ -125,7 +125,7 @@ var SaveFile = function(saveBuffer) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.hgss;
 			}
-			if (rawDataView.getUint32(0x12b8 + BlockOffsets.block2, true) === comp) {
+			if (!this.is256kB && rawDataView.getUint32(0x12b8 + BlockOffsets.block2, true) === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.hgss;
 			}
@@ -134,7 +134,7 @@ var SaveFile = function(saveBuffer) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.bw;
 			}
-			if (rawDataView.getUint32(0x21600 + BlockOffsets.block2bw, true) === comp) {
+			if (!this.is256kB && rawDataView.getUint32(0x21600 + BlockOffsets.block2bw, true) === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.bw;
 			}
@@ -143,7 +143,7 @@ var SaveFile = function(saveBuffer) {
 				this.usableBlocks = UsableBlocks.block1;
 				ver = Versions.b2w2;
 			}
-			if (rawDataView.getUint32(0x21400 + BlockOffsets.block2b2w2, true) === comp) {
+			if (!this.is256kB && rawDataView.getUint32(0x21400 + BlockOffsets.block2b2w2, true) === comp) {
 				this.usableBlocks |= UsableBlocks.block2;
 				return Versions.b2w2;
 			}
