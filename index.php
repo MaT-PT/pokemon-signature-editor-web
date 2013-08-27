@@ -16,12 +16,16 @@ if (isset($_GET['lang'])) {
 if (!$langOk) {
   $acceptLangs = array();
   if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-    preg_match_all('/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
+    preg_match_all('/([a-z]{1,8})(?:-[a-z]{1,8})?\s*(?:;\s*q\s*=\s*(1|0\.[0-9]+))?/i', $_SERVER['HTTP_ACCEPT_LANGUAGE'], $lang_parse);
     if (count($lang_parse[1])) {
-      $acceptLangs = array_combine($lang_parse[1], $lang_parse[4]);
-      foreach ($acceptLangs as $lang => $val) {
-        if ($val === '')
-          $acceptLangs[$lang] = 1;
+      $acceptLangs = array();
+      $langArr = $lang_parse[1];
+      $qArr = $lang_parse[2];
+      foreach ($langArr as $i => $val) {
+        $l = strtolower($val);
+        $q = $qArr[$i] === '' ? 1 : $qArr[$i];
+        if (!isset($acceptLangs[$l]) || (isset($acceptLangs[$l]) && $q > $acceptLangs[$l]))
+          $acceptLangs[$l] = $q;
       }
       arsort($acceptLangs, SORT_NUMERIC);
     }
