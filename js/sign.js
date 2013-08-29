@@ -17,6 +17,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		img = document.createElement('IMG'),
 		imageSelect = document.getElementById('image_select'),
 		saveSelect = document.getElementById('save_select'),
+		thresholdSlider = document.getElementById('threshold'),
 		imgLoaded = false,
 		imgMonoLoaded = false,
 		saveLoaded = false,
@@ -30,6 +31,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		animateWrapper = document.getElementById('sign_preview_animate'),
 		animateCb = document.getElementById('animate'),
 		lastTimeout = -1,
+		lastThreshold = Math.round(thresholdSlider.value * 100) / 100,
 		codeBox1 = document.getElementById('code_box1'),
 		codeBox2 = document.getElementById('code_box2');
 
@@ -381,7 +383,7 @@ window.addEventListener('DOMContentLoaded', function() {
 		try {
 			var imgd = ctx.getImageData(0, 0, 192, 64),
 				pixMap = imgd.data,
-				threshold = Math.round(document.getElementById('threshold').value * 100) / 100;
+				threshold = Math.round(thresholdSlider.value * 100) / 100;
 
 			for (var i = 0, l = pixMap.length; i < l; i += 4)
 				pixMap[i] = pixMap[i+1] = pixMap[i+2] = (GetBrightness(pixMap[i], pixMap[i+1], pixMap[i+2]) >= threshold ? 255 : 0);
@@ -527,9 +529,21 @@ window.addEventListener('DOMContentLoaded', function() {
 		}
 	}, false);
 
-	document.getElementById('threshold').addEventListener('input', function(evt) {
-		document.getElementById('threshold_value').innerHTML = Math.round(this.value * 100) / 100;
-		makeMonoImage();
-	}, false);
-	document.getElementById('threshold_value').innerHTML = Math.round(document.getElementById('threshold').value * 100) / 100;
+	function updateThresholdValue(thr) {
+		document.getElementById('threshold_value').innerHTML = thr;
+	}
+
+	function updateThreshold() {
+		var thr = Math.round(thresholdSlider.value * 100) / 100;
+		if (thr !== lastThreshold) {
+			lastThreshold = thr;
+			updateThresholdValue(thr);
+			makeMonoImage();
+		}
+	}
+
+	thresholdSlider.addEventListener('input', updateThreshold, false);
+	thresholdSlider.addEventListener('change', updateThreshold, false);
+
+	updateThresholdValue(lastThreshold);
 }, false);
