@@ -1,7 +1,7 @@
 var Langs = {fr: 0, en: 1, jp: 2, es: 3, it: 4, de: 5, ko: 6},
 	Formats = {raw: 0, dsv: 1, no$GbaUncompressed: 2, no$GbaCompressed: 3, ToString: function(id) {return {0: 'Raw', 1: 'DSV (DeSmuME)', 2: 'No$GBA Uncompressed', 3: 'No$GBA Compressed'}[id];}},
 	Versions = {dp: 0, plat: 1, hgss: 2, bw: 3, b2w2: 4, unknown: 0xff},
-	Statuses = {good: 0, corrupt: 1, fallbackToBlock1: 2, fallbackToBlock2: 3, GetColor: function(id) {return {0: 'green', 1: 'darkred', 2: 'orangered', 3: 'orangered', }[id]}};
+	Statuses = {good: 0, corrupt: 1, fallbackToBlock1: 2, fallbackToBlock2: 3, GetColor: function(id) {return {0: 'green', 1: 'darkred', 2: 'orangered', 3: 'orangered'}[id]}};
 
 var SaveFile = function(saveBuffer) {
 	if (saveBuffer.byteLength < 0x7a) {	// Ensure the file is big enough.

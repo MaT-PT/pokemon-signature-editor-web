@@ -7,7 +7,7 @@ String.prototype.toCharCode = function() {
 };
 
 if (!ArrayBuffer.prototype.slice)
-	ArrayBuffer.prototype.slice = function (begin, end) {
+	ArrayBuffer.prototype.slice = function(begin, end) {
 		var length = this.byteLength;
 		if (begin === undefined)
 			begin = 0;
