@@ -143,7 +143,7 @@ Vous pouvez aussi double-cliquer dessus.'
 
 function get_msg($name) {
   global $msgs, $lang, $def_lang;
-  
+
   if (isset($msgs[$name])) {
     if (isset($msgs[$name][$lang]))
       return $msgs[$name][$lang];

@@ -53,7 +53,7 @@ catch (e) {
 	canMakeBlob = false;
 }
 
-function clickElement(elt){	
+function clickElement(elt) {
 	if (document.createEvent) {
 		var evt = document.createEvent('MouseEvents');
 		if (evt.initMouseEvent)

@@ -321,12 +321,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
 			case Versions.bw:
 				addr = 0x1c9bc;
-				break;		
+				break;
 
 			case Versions.b2w2:
 			default:
 				addr = 0x1ca20;
-				break;				
+				break;
 		}
 
 		addrE = 0xe0000000 + addr;
@@ -357,10 +357,10 @@ window.addEventListener('DOMContentLoaded', function() {
 
 		if (splitCode) {
 			code2 = codeTrigger + pointer + Dec2Hex(addrE + 0x300) + ' 00000300\n' + code1.substring(1728) + 'D2000000 00000000';
-			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000300\n' + code1.substr(0, 1728) + 'D2000000 00000000';			
+			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000300\n' + code1.substr(0, 1728) + 'D2000000 00000000';
 		}
 		else
-			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000600\n' + code1 + 'D2000000 00000000';			
+			code1 = codeTrigger + pointer + Dec2Hex(addrE) + ' 00000600\n' + code1 + 'D2000000 00000000';
 
 		return [code1, code2];
 	}
@@ -445,7 +445,7 @@ window.addEventListener('DOMContentLoaded', function() {
 				tcData = tCardData['b2w2' + halfTxt];
 				imgUrl += 'Black2_' + nbStars + 's' + halfTxt;
 				animateWrapper.style.visibility = 'visible';
-				break;				
+				break;
 		}
 		imgUrl += '.png';
 

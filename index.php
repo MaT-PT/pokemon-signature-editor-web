@@ -109,7 +109,7 @@ require_once('l10n.php');
         <input id="it_code" name="radio_lang_code" type="radio" value="it" <?php if ($lang === 'it') echo 'checked="checked" '; ?>/><label for="it_code">Italiano</label>
       </div>
       <div class="float">
-        <input id="de_code" name="radio_lang_code" type="radio" value="de" <?php if ($lang === 'de') echo 'checked="checked" '; ?>/><label for="de_code">Deutch</label><br />
+        <input id="de_code" name="radio_lang_code" type="radio" value="de" <?php if ($lang === 'de') echo 'checked="checked" '; ?>/><label for="de_code">Deutsch</label><br />
         <input id="ko_code" name="radio_lang_code" type="radio" value="ko" <?php if ($lang === 'ko') echo 'checked="checked" '; ?>/><label for="ko_code">&#54620;&#44397;&#50612; (Korean)</label>
       </div>
     </fieldset>
