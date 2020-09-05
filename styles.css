@@ -243,10 +243,10 @@ table caption {
 	color: #222;
 }
 
-.no-details details > summary:before {
-	color: #6666ff;
+details > summary {
+	cursor: pointer;
 }
-details > summary::-webkit-details-marker {
+details > summary::marker {
 	color: #6666ff;
 }
 
