@@ -81,7 +81,7 @@ require_once('l10n.php');
   </section>
   <section id="sign_preview_wrapper">
     <div id="sign_preview_middle">
-      <?php show_msg('sign_preview'); ?> 
+      <?php show_msg('sign_preview'); ?>
       <canvas id="sign_preview_canvas" width="256" height="88">[canvas]</canvas>
     </div>
     <div id="sign_preview_params">
@@ -205,7 +205,7 @@ require_once('l10n.php');
             <td class="right">
               <label for="key_start">Start</label>&nbsp;<input type="checkbox" name="key" id="key_start" value="START" />
             </td>
-            <td> 
+            <td>
             </td>
             <td class="left">
               <input type="checkbox" name="key" id="key_select" value="SELECT" />&nbsp;<label for="key_select">Select</label>
